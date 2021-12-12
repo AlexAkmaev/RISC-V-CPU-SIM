@@ -1,18 +1,28 @@
-#include <iostream>
-
 #ifndef SIMULATOR_FETCH_H
 #define SIMULATOR_FETCH_H
 
-class FetchStage {
+#include "units/Basics.h"
+
+class Fetch final : public Stage {
 public:
-    bool Run();
+    explicit Fetch(uint32_t instr_count) : imem_(IMEM{instr_count}) {}
+    bool Run() override;
 
 private:
-    enum class State : uint32_t {
-        PC
-    };
-
     void getInstrFromIMEM();
+
+    /*=== units ===*/
+    IMEM imem_;
+    /*=============*/
+
+    /*=== inputs ===*/
+    PC pc_{0};
+    /*==============*/
+
+    /*=== outputs ===*/
+    RISCVInstr instr_;
+    PC pc_next_{0};
+    /*===============*/
 };
 
 #endif //SIMULATOR_FETCH_H

@@ -1,10 +1,12 @@
-#include <iostream>
-#include "stages/Fetch.h"
-#include "riscv/instruction.h"
-#include "riscv/opcodes.h"
-
 #ifndef SIMULATOR_SIMULATOR_H
 #define SIMULATOR_SIMULATOR_H
+
+#include <iostream>
+#include "stages/Fetch.h"
+#include "stages/Decode.h"
+#include "units/ContolUnit.h"
+#include "riscv/instruction.h"
+#include "riscv/opcodes.h"
 
 class Simulator {
 public:
@@ -12,7 +14,8 @@ public:
     bool Run();
 
 private:
-    FetchStage *fetch_;
+    Fetch fetch_;
+    Decode decode_;
 };
 
 #endif //SIMULATOR_SIMULATOR_H

@@ -1,13 +1,6 @@
 #include "instruction.h"
-
-// Takes subset of a given bitset in range e.g. [x,x,xL,x,x,x,xR,x,x] -> N = 9, L = 6, R = 2
-// returns bitset [xL,x,x,x,xR] -> N = L - R + 1 = 5
-template<std::size_t L, std::size_t R, std::size_t N>
-std::bitset<L - R + 1> sub_range(std::bitset<N> b) {
-    static_assert(R >= 0 && R <= L && L <= N - 1, "invalid bitrange");
-    std::bitset<L - R + 1> sub_set{b.to_string().substr(N - L - 1, L - R + 1)};
-    return sub_set;
-}
+#include "units/Basics.h"
+#include <cassert>
 
 RISCVInstr::RISCVInstr(const std::bitset<32> i)  : instr_(i) {
     std::bitset<7> opcode = sub_range<6, 0>(instr_);
@@ -32,6 +25,40 @@ RISCVInstr::RISCVInstr(const std::bitset<32> i)  : instr_(i) {
             type_ = Format::B;
             SelectBranch();
             break;
+        case 0b0000011:
+            type_ = Format::I;
+            SelectL();
+            break;
+        case 0b0100011:
+            type_ = Format::S;
+            SelectS();
+            break;
+        case 0b0010011:
+            type_ = Format::S;
+            SelectII();
+            break;
+        case 0b0110011:
+            type_ = Format::R;
+            SelectR();
+            break;
+        case 0b1110011: {
+            type_ = Format::I;
+            switch (instr_[11]) {
+                case 0b0:
+                    op_ = Opcode::ECALL;
+                    break;
+                case 0b1:
+                    op_ = Opcode::EBREAK;
+                    break;
+                default:
+                    std::cerr << "Invalid instruction: " << instr_.to_string() << "\n";
+                    return;
+            }
+            break;
+        }
+        default:
+            std::cerr << "Invalid instruction: " << instr_.to_string() << "\n";
+            return;
     }
 }
 
@@ -70,3 +97,175 @@ void RISCVInstr::SelectBranch() {
     }
 }
 
+void RISCVInstr::SelectL() {
+    funct3_ = sub_range<14, 12>(instr_);
+    switch (funct3_.to_ulong()) {
+        case 0b000:
+            op_ = Opcode::LB;
+            break;
+        case 0b001:
+            op_ = Opcode::LH;
+            break;
+        case 0b010:
+            op_ = Opcode::LW;
+            break;
+        case 0b100:
+            op_ = Opcode::LBU;
+            break;
+        case 0b101:
+            op_ = Opcode::LHU;
+            break;
+        default:
+            std::cerr << "Invalid instruction: " << instr_.to_string() << "\n";
+            return;
+    }
+}
+
+void RISCVInstr::SelectS() {
+    funct3_ = sub_range<14, 12>(instr_);
+    switch (funct3_.to_ulong()) {
+        case 0b000:
+            op_ = Opcode::SB;
+            break;
+        case 0b001:
+            op_ = Opcode::SH;
+            break;
+        case 0b010:
+            op_ = Opcode::SW;
+            break;
+        default:
+            std::cerr << "Invalid instruction: " << instr_.to_string() << "\n";
+            return;
+    }
+}
+
+void RISCVInstr::SelectII() {
+    funct3_ = sub_range<14, 12>(instr_);
+    switch (funct3_.to_ulong()) {
+        case 0b000:
+            op_ = Opcode::ADDI;
+            break;
+        case 0b010:
+            op_ = Opcode::SLTI;
+            break;
+        case 0b011:
+            op_ = Opcode::SLTIU;
+            break;
+        case 0b100:
+            op_ = Opcode::XORI;
+            break;
+        case 0b110:
+            op_ = Opcode::ORI;
+            break;
+        case 0b111:
+            op_ = Opcode::ANDI;
+            break;
+        case 0b001:
+            type_ = Format::R;
+            op_ = Opcode::SLLI;
+            break;
+        case 0b101: {
+            type_ = Format::R;
+            funct7_ = sub_range<31, 25>(instr_);
+            switch (funct7_.to_ulong()) {
+                case 0b0000000:
+                    op_ = Opcode::SRLI;
+                    break;
+                case 0b0100000:
+                    op_ = Opcode::SRAI;
+                    break;
+                default:
+                    std::cerr << "Invalid instruction: " << instr_.to_string() << "\n";
+                    return;
+            }
+            break;
+        }
+        default:
+            std::cerr << "Invalid instruction: " << instr_.to_string() << "\n";
+            return;
+    }
+}
+
+void RISCVInstr::SelectR() {
+    funct3_ = sub_range<14, 12>(instr_);
+    funct7_ = sub_range<31, 25>(instr_);
+    switch (funct3_.to_ulong()) {
+        case 0b000: {
+            switch (funct7_.to_ulong()) {
+                case 0b0000000:
+                    op_ = Opcode::ADD;
+                    break;
+                case 0b0100000:
+                    op_ = Opcode::SUB;
+                    break;
+                default:
+                    std::cerr << "Invalid instruction: " << instr_.to_string() << "\n";
+                    return;
+            }
+            break;
+        }
+        case 0b001:
+            op_ = Opcode::SLL;
+            break;
+        case 0b010:
+            op_ = Opcode::SLT;
+            break;
+        case 0b011:
+            op_ = Opcode::SLTU;
+            break;
+        case 0b100:
+            op_ = Opcode::XOR;
+            break;
+        case 0b101: {
+            switch (funct7_.to_ulong()) {
+                case 0b0000000:
+                    op_ = Opcode::SRL;
+                    break;
+                case 0b0100000:
+                    op_ = Opcode::SRA;
+                    break;
+                default:
+                    std::cerr << "Invalid instruction: " << instr_.to_string() << "\n";
+                    return;
+            }
+            break;
+        }
+        case 0b110:
+            op_ = Opcode::OR;
+            break;
+        case 0b111:
+            op_ = Opcode::AND;
+            break;
+        default:
+            std::cerr << "Invalid instruction: " << instr_.to_string() << "\n";
+            return;
+    }
+}
+
+std::bitset<5> RISCVInstr::getRs1() {
+    assert(type_ == Format::R || type_ == Format::I || type_ == Format::S || type_ == Format::B);
+    std::bitset<5> rs1 = sub_range<19, 15>(instr_);
+    return rs1;
+}
+
+std::bitset<5> RISCVInstr::getRs2() {
+    assert(type_ == Format::R || type_ == Format::S || type_ == Format::B);
+    std::bitset<5> rs2 = sub_range<24, 20>(instr_);
+    return rs2;
+}
+
+std::bitset<5> RISCVInstr::getRd() {
+    assert(type_ != Format::S || type_ != Format::B);
+    std::bitset<5> rd = sub_range<11, 7>(instr_);
+    return rd;
+}
+
+std::bitset<3> RISCVInstr::getFunct3() {
+    assert(type_ != Format::U && type_ != Format::J);
+    return funct3_;
+}
+
+std::bitset<7> RISCVInstr::getFunct7() {
+    assert(type_ == Format::R);
+    return funct7_;
+}

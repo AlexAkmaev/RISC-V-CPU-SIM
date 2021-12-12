@@ -1,11 +1,10 @@
 #include "Fetch.h"
 
-bool FetchStage::Run() {
+bool Fetch::Run() {
 
     return true;
 }
 
-void FetchStage::getInstrFromIMEM() {
+void Fetch::getInstrFromIMEM() {
 
 }
-
