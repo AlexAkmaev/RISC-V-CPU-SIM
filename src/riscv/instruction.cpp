@@ -62,11 +62,11 @@ RISCVInstr::RISCVInstr(const std::bitset<32> i)  : instr_(i) {
     }
 }
 
-Opcode RISCVInstr::getOpcode() const {
+Opcode RISCVInstr::getOpcode() const noexcept {
     return op_;
 }
 
-RISCVInstr::Format RISCVInstr::getFormat() const {
+RISCVInstr::Format RISCVInstr::getFormat() const noexcept {
     return type_;
 }
 
@@ -242,30 +242,34 @@ void RISCVInstr::SelectR() {
     }
 }
 
-std::bitset<5> RISCVInstr::getRs1() {
+std::bitset<5> RISCVInstr::getRs1() const noexcept {
     assert(type_ == Format::R || type_ == Format::I || type_ == Format::S || type_ == Format::B);
     std::bitset<5> rs1 = sub_range<19, 15>(instr_);
     return rs1;
 }
 
-std::bitset<5> RISCVInstr::getRs2() {
+std::bitset<5> RISCVInstr::getRs2() const noexcept {
     assert(type_ == Format::R || type_ == Format::S || type_ == Format::B);
     std::bitset<5> rs2 = sub_range<24, 20>(instr_);
     return rs2;
 }
 
-std::bitset<5> RISCVInstr::getRd() {
+std::bitset<5> RISCVInstr::getRd() const noexcept {
     assert(type_ != Format::S || type_ != Format::B);
     std::bitset<5> rd = sub_range<11, 7>(instr_);
     return rd;
 }
 
-std::bitset<3> RISCVInstr::getFunct3() {
+std::bitset<3> RISCVInstr::getFunct3() const noexcept {
     assert(type_ != Format::U && type_ != Format::J);
     return funct3_;
 }
 
-std::bitset<7> RISCVInstr::getFunct7() {
+std::bitset<7> RISCVInstr::getFunct7() const noexcept {
     assert(type_ == Format::R);
     return funct7_;
+}
+
+std::bitset<32> RISCVInstr::getInstr() const noexcept {
+    return instr_;
 }

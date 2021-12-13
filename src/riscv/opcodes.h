@@ -43,7 +43,6 @@ enum class Opcode : uint8_t {
     SRA,
     OR,
     AND,
-    FENCE,
     ECALL,
     EBREAK
 };

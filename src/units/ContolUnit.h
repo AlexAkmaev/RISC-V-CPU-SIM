@@ -3,11 +3,15 @@
 
 #include "riscv/instruction.h"
 
-class ControlUnit {
+class ControlUnit final {
 public:
-    enum class Flags : bool {
-
-    };
+    struct Flags final {
+        bool WB_WE;  // reg file write enable
+        uint8_t ALU_OP;
+        uint8_t ALU_SRC2;
+        bool MEM_WE;
+        bool BRANCH_COND;
+    } flags;
 
     void setState(const RISCVInstr &instr);
 };

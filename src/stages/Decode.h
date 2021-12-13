@@ -7,6 +7,9 @@ class Decode final : public Stage {
 public:
     bool Run() override;
 
+    [[nodiscard]] ControlUnit::Flags getCUState() const noexcept;
+    [[nodiscard]] std::bitset<32> getRD1() const noexcept;
+    [[nodiscard]] std::bitset<32> getRD2() const noexcept;
 private:
     /*=== units ===*/
     ControlUnit cu_;
@@ -18,7 +21,9 @@ private:
     /*==============*/
 
     /*=== outputs ===*/
-    
+    std::bitset<32> D1;
+    std::bitset<32> D2;
+    // cu_ flags state
     /*===============*/
 
     /*=== fallthrough ===*/

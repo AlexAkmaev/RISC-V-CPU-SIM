@@ -5,12 +5,20 @@
 
 class Fetch final : public Stage {
 public:
+    enum class Flags : bool {
+        PC_R = false
+    };
+
     explicit Fetch(uint32_t instr_count) : imem_(IMEM{instr_count}) {}
     bool Run() override;
 
-private:
-    void getInstrFromIMEM();
+    [[nodiscard]] RISCVInstr getInstr() const noexcept;
+    [[nodiscard]] PC getNextPC() const noexcept;
+    [[nodiscard]] PC getDispPC() const noexcept;
+    void setIMEM(IMEM &&imem) noexcept;
 
+private:
+    bool is_set{false};
     /*=== units ===*/
     IMEM imem_;
     /*=============*/

@@ -13,13 +13,14 @@ public:
     RISCVInstr() = default;
     explicit RISCVInstr(std::bitset<32> i);
 
-    [[nodiscard]] Opcode getOpcode() const;
-    [[nodiscard]] Format getFormat() const;
-    std::bitset<5> getRs1();
-    std::bitset<5> getRs2();
-    std::bitset<5> getRd();
-    std::bitset<3> getFunct3();
-    std::bitset<7> getFunct7();
+    [[nodiscard]] Opcode getOpcode() const noexcept;
+    [[nodiscard]] Format getFormat() const noexcept;
+    std::bitset<5> getRs1() const noexcept;
+    std::bitset<5> getRs2() const noexcept;
+    std::bitset<5> getRd() const noexcept;
+    std::bitset<3> getFunct3() const noexcept;
+    std::bitset<7> getFunct7() const noexcept;
+    std::bitset<32> getInstr() const noexcept;
 private:
     void SelectBranch();
     void SelectL();

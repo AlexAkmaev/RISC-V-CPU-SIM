@@ -5,6 +5,7 @@
 #include "stages/Fetch.h"
 #include "stages/Decode.h"
 #include "units/ContolUnit.h"
+#include "units/HazardUnit.h"
 #include "riscv/instruction.h"
 #include "riscv/opcodes.h"
 
