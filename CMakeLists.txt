@@ -8,6 +8,7 @@ set(SIM_SOURCES
         src/simulator.cpp
         src/stages/Fetch.cpp
         src/stages/Decode.cpp
+        src/stages/Execute.cpp
         src/units/ControlUnit.cpp
         src/riscv/instruction.cpp)
 

@@ -15,12 +15,12 @@ public:
 
     [[nodiscard]] Opcode getOpcode() const noexcept;
     [[nodiscard]] Format getFormat() const noexcept;
-    std::bitset<5> getRs1() const noexcept;
-    std::bitset<5> getRs2() const noexcept;
-    std::bitset<5> getRd() const noexcept;
-    std::bitset<3> getFunct3() const noexcept;
-    std::bitset<7> getFunct7() const noexcept;
-    std::bitset<32> getInstr() const noexcept;
+    [[nodiscard]] std::bitset<5> getRs1() const noexcept;
+    [[nodiscard]] std::bitset<5> getRs2() const noexcept;
+    [[nodiscard]] std::bitset<5> getRd() const noexcept;
+    [[nodiscard]] std::bitset<3> getFunct3() const noexcept;
+    [[nodiscard]] std::bitset<7> getFunct7() const noexcept;
+    [[nodiscard]] std::bitset<32> getInstr() const noexcept;
 private:
     void SelectBranch();
     void SelectL();
