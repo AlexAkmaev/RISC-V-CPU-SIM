@@ -15,9 +15,11 @@ public:
     [[nodiscard]] std::bitset<32> getRD2() const noexcept;
     [[nodiscard]] RISCVInstr getInstr() const noexcept;
     [[nodiscard]] PC getPC() const noexcept;
+    [[nodiscard]] bool V_DE() const noexcept;
 
     void setInstr(const RISCVInstr &instr);
     void setPC(const PC &pc);
+    void setPC_R(bool pc_f);
 
     bool is_set{false};
 private:
@@ -27,13 +29,14 @@ private:
     /*=============*/
 
     /*=== inputs ===*/
+    bool pc_f_{false};
     RISCVInstr instr_;
     /*==============*/
 
     /*=== outputs ===*/
     std::bitset<32> D1;
     std::bitset<32> D2;
-    bool V_DE_{false};
+    bool v_de_{true};
     // cu_ flags state
     // instr_
     /*===============*/

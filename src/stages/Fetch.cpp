@@ -7,7 +7,8 @@ bool Fetch::Run(Simulator &cpu) {
     }
 
     instr_ = RISCVInstr{imem_.getInstr(pc_)};
-    if (!cpu.execute_.PC_R()) {
+    pc_r_ = cpu.execute_.PC_R();
+    if (!pc_r_) {
         pc_next_ += 4;
     } else {
         pc_next_ = cpu.execute_.PC_EX() + cpu.execute_.PC_DISP();
@@ -29,6 +30,10 @@ RISCVInstr Fetch::getInstr() const noexcept {
 
 PC Fetch::getNextPC() const noexcept {
     return pc_next_;
+}
+
+bool Fetch::PC_R() const noexcept {
+    return pc_r_;
 }
 
 void Fetch::setIMEM(IMEM &&imem) noexcept {

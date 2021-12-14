@@ -2,6 +2,24 @@
 #include "simulator.h"
 
 bool Memory::Run(Simulator &cpu) {
+    if (!is_set) {
+        return false;
+    }
+
+    if (ws_) {
+        wb_we_ = we_gen_.WB_WE();
+        if (we_gen_.MEM_WE()) {
+            dmem_.Store(D2, alu_out_);
+        } else {
+            out_data_ = dmem_.Load(alu_out_);
+        }
+    } else {
+        out_data_ = alu_out_;
+    }
+
+    cpu.MWBtransmitData();
+
+    is_set = false;
     return true;
 }
 
@@ -9,6 +27,38 @@ bool Memory::Stall() {
     return true;
 }
 
-std::bitset<32> Memory::BP_MEM() const noexcept {
-    return bp_mem_;
+std::bitset<32> Memory::ALU_OUT() const noexcept {
+    return alu_out_;
+}
+
+bool Memory::WB_WE() const noexcept {
+    return wb_we_;
+}
+
+std::bitset<5> Memory::WB_A() const noexcept {
+    return wb_a_;
+}
+
+std::bitset<32> Memory::getOutData() const noexcept {
+    return out_data_;
+}
+
+void Memory::setWE_GEN(const WE_GEN &we_gen) {
+    we_gen_ = we_gen;
+}
+
+void Memory::setD2(std::bitset<32> d2) {
+    D2 = d2;
+}
+
+void Memory::setWS(bool ws) {
+    ws_ = ws;
+}
+
+void Memory::setALU_OUT(std::bitset<32> alu_out) {
+    alu_out_ = alu_out;
+}
+
+void Memory::setWB_A(std::bitset<5> wb_a) {
+    wb_a_ = wb_a;
 }

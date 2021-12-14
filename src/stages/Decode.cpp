@@ -14,7 +14,7 @@ bool Decode::Run(Simulator &cpu) {
         reg_file_.Write(cpu.write_back_.WB_A(), cpu.write_back_.WB_D());
     }
 
-//    V_DE_ = cpu.fetch_.
+    v_de_ = !(pc_f_ || cpu.execute_.PC_R());
     cpu.DEtransmitData();
 
     is_set = false;
@@ -41,6 +41,14 @@ PC Decode::getPC() const noexcept {
     return pc_;
 }
 
+RISCVInstr Decode::getInstr() const noexcept {
+    return instr_;
+}
+
+bool Decode::V_DE() const noexcept {
+    return v_de_;
+}
+
 void Decode::setInstr(const RISCVInstr &instr) {
     instr_ = instr;
 }
@@ -49,6 +57,6 @@ void Decode::setPC(const PC &pc) {
     pc_ = pc;
 }
 
-RISCVInstr Decode::getInstr() const noexcept {
-    return instr_;
+void Decode::setPC_R(bool pc_f) {
+    pc_f_ = pc_f;
 }

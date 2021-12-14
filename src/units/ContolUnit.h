@@ -11,7 +11,9 @@ public:
         ALU::Op ALU_OP;
         CMP::Op CMP_OP;
         bool MEM_WE;
+        bool WS;
         bool BRANCH_COND;
+        bool JMP;
     } flags;
 
     void setState(const RISCVInstr &instr);

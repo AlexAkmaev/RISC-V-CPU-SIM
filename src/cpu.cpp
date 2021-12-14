@@ -8,7 +8,7 @@ int main() {
 //    std::cout << bb.to_ulong() << std::endl;
 //    std::cout << bb.to_string() << std::endl;
 //    std::cout << static_cast<int32_t>(bb.to_ulong()) << std::endl;
-    Simulator cpu = Simulator();
+    Simulator cpu = Simulator{1};
     if (!cpu.Run()) {
         return 1;
     }

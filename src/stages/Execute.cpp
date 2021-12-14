@@ -6,7 +6,11 @@ bool Execute::Run(Simulator &cpu) {
         return false;
     }
 
+    we_gen_ = WE_GEN{CONTROL_EX_.MEM_WE, CONTROL_EX_.WB_WE, v_ex_};
+
+    wb_a_ = instr_.getRd();
     imm_ = IMM{instr_};
+    PC_DISP_ = PC{imm_.getImm()};
     auto RS1V = ChooseRS(true, cpu.hu_.HU_RS1(), cpu);
     auto RS2V = ChooseRS(false, cpu.hu_.HU_RS2(), cpu);
 
@@ -19,7 +23,9 @@ bool Execute::Run(Simulator &cpu) {
     }
 
     alu_out_ = ALU::calc(alu_src1, alu_src2, CONTROL_EX_.ALU_OP);
-    PC_R_ = CMP::calc(RS1V, RS2V, CONTROL_EX_.CMP_OP) && CONTROL_EX_.BRANCH_COND;
+    PC_R_ = CMP::calc(RS1V, RS2V, CONTROL_EX_.CMP_OP) && CONTROL_EX_.BRANCH_COND || CONTROL_EX_.JMP;
+
+    cpu.EMtransmitData();
 
     is_set = false;
     return true;
@@ -28,16 +34,28 @@ bool Execute::Run(Simulator &cpu) {
 std::bitset<32> Execute::ChooseRS(bool rs, const HazardUnit::HU_RS &hu_rs, Simulator &cpu) const {
     switch (hu_rs) {
         case HazardUnit::HU_RS::D1:
-            return rs ? D1 : D2;
+            return rs ? d1_ : d2_;
         case HazardUnit::HU_RS::BP_MEM:
-            return cpu.memory_.BP_MEM();
+            return cpu.memory_.ALU_OUT();
         case HazardUnit::HU_RS::BP_WB:
-            return cpu.write_back_.BP_WB();
+            return cpu.write_back_.WB_D();
     }
 }
 
 bool Execute::Stall() {
     return true;
+}
+
+WE_GEN Execute::getWE_GEN() const noexcept {
+    return we_gen_;
+}
+
+std::bitset<32> Execute::ALU_OUT() const noexcept {
+    return alu_out_;
+}
+
+std::bitset<32> Execute::D2() const noexcept {
+    return d2_;
 }
 
 bool Execute::PC_R() const noexcept {
@@ -52,17 +70,25 @@ PC Execute::PC_DISP() const noexcept {
     return PC_DISP_;
 }
 
-bool Execute::V_EX() const noexcept {
-    return V_EX_;
+bool Execute::WS() const noexcept {
+    return CONTROL_EX_.WS;
+}
+
+std::bitset<5> Execute::WB_A() const noexcept {
+    return wb_a_;
 }
 
 void Execute::setD1_D2(std::bitset<32> d1, std::bitset<32> d2) {
-    D1 = d1;
-    D2 = d2;
+    d1_ = d1;
+    d2_ = d2;
 }
 
 void Execute::setInstr(const RISCVInstr &instr) {
     instr_ = instr;
+}
+
+void Execute::setV_EX(bool v_ex) {
+    v_ex_ = v_ex;
 }
 
 void Execute::setPC_EX(const PC &pc) {

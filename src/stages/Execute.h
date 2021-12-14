@@ -10,14 +10,19 @@ public:
     bool Run(Simulator &cpu) override;
     bool Stall() override;
 
+    [[nodiscard]] WE_GEN getWE_GEN() const noexcept;
+    [[nodiscard]] std::bitset<32> ALU_OUT() const noexcept;
+    [[nodiscard]] std::bitset<32> D2() const noexcept;
     [[nodiscard]] bool PC_R() const noexcept;
     [[nodiscard]] PC PC_EX() const noexcept;
     [[nodiscard]] PC PC_DISP() const noexcept;
-    [[nodiscard]] bool V_EX() const noexcept;
+    [[nodiscard]] bool WS() const noexcept;
+    [[nodiscard]] std::bitset<5> WB_A() const noexcept;
 
+    void setPC_EX(const PC &pc);
     void setD1_D2(std::bitset<32> d1, std::bitset<32> d2);
     void setInstr(const RISCVInstr &instr);
-    void setPC_EX(const PC &pc);
+    void setV_EX(bool v_ex);
     void setControl_EX(const ControlUnit::Flags &flags);
 
     bool is_set{false};
@@ -32,21 +37,23 @@ private:
     /*=============*/
 
     /*=== inputs ===*/
-    std::bitset<32> D1;
-    std::bitset<32> D2;
+    std::bitset<32> d1_;
+    std::bitset<32> d2_;
     RISCVInstr instr_;
     PC PC_EX_;
+    bool v_ex_{true};
     /*==============*/
 
     /*=== outputs ===*/
     std::bitset<32> alu_out_;
     PC PC_DISP_;
     bool PC_R_{false};
-    bool V_EX_{false};
+    WE_GEN we_gen_;
     /*===============*/
 
     /*=== fallthrough ===*/
     ControlUnit::Flags CONTROL_EX_;
+    std::bitset<5> wb_a_;
     // D2
     /*===================*/
 };

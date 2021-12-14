@@ -43,17 +43,7 @@ RISCVInstr::RISCVInstr(const std::bitset<32> i)  : instr_(i) {
             break;
         case 0b1110011: {
             type_ = Format::I;
-            switch (instr_[11]) {
-                case 0b0:
-                    op_ = Opcode::ECALL;
-                    break;
-                case 0b1:
-                    op_ = Opcode::EBREAK;
-                    break;
-                default:
-                    std::cerr << "Invalid instruction: " << instr_.to_string() << "\n";
-                    return;
-            }
+            op_ = instr_[11] ? op_ = Opcode::EBREAK : Opcode::ECALL;
             break;
         }
         default:

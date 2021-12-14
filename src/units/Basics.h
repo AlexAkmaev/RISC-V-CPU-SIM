@@ -15,13 +15,6 @@ class Simulator;
 
 class Stage {
 public:
-    enum class Type {
-        Fetch,
-        Decode,
-        Execute,
-        Memory
-    };
-
     virtual bool Run(Simulator &cpu) = 0;
     virtual bool Stall() = 0;
 };
@@ -63,8 +56,6 @@ std::bitset<N> operator+(std::bitset<N> lhs, std::bitset<N> rhs) {
 /*======== Fetch units ===========*/
 
 struct PC final {
-    Stage::Type type = Stage::Type::Fetch;
-
     PC() : pc_(0) {}
 
     explicit PC(uint32_t pc) : pc_(pc) {}
@@ -78,7 +69,7 @@ struct PC final {
     }
 
     PC operator+(PC rhs) const noexcept {
-        uint32_t res_pc = pc_ + rhs.val();
+        uint32_t res_pc = pc_ + rhs.val() / 4;
         assert(res_pc >= 0);
         return PC{res_pc};
     }
@@ -91,7 +82,7 @@ struct PC final {
     }
 
     PC &operator+=(std::bitset<32> offset) noexcept {
-        pc_ += offset.to_ulong();
+        pc_ += offset.to_ulong() / 4;
         assert(pc_ >= 0);
         return *this;
     }
@@ -113,6 +104,7 @@ private:
 class IMEM final {
 public:
     explicit IMEM(uint32_t instr_count) : imem_(std::vector<std::bitset<32>>(instr_count)) {}
+    explicit IMEM(std::vector<std::bitset<32>> &&imem) : imem_(std::move(imem)) {}
 
     void addToImem(const PC &pc, std::bitset<32> instr) {
         imem_[pc.val()] = instr;
@@ -133,13 +125,9 @@ class ControlUnit;
 
 class RegisterFile final {
 public:
-    enum class Flags : bool {
-        WE3 = true
-    };
-
     void Write(std::bitset<5> A3, std::bitset<32> D3) {
         uint8_t idx = A3.to_ulong();
-        assert(static_cast<bool>(Flags::WE3) && idx < 32);
+        assert(idx < 32);
         regs_[idx] = D3;
     }
 
@@ -297,13 +285,38 @@ public:
     }
 };
 
+class WE_GEN final {
+public:
+    WE_GEN() = default;
+    explicit WE_GEN(bool mem_we, bool wb_we, bool v_ex) : mem_we_(mem_we && v_ex), wb_we_(wb_we && v_ex) {}
+
+    [[nodiscard]] bool MEM_WE() const noexcept {
+        return mem_we_;
+    }
+
+    [[nodiscard]] bool WB_WE() const noexcept {
+        return wb_we_;
+    }
+
+private:
+    bool mem_we_{true};
+    bool wb_we_{true};
+};
 
 /*======== Memory units ===========*/
 
 class DMEM final {
 public:
-    // dmem_ can consists of 2^30 words, but to simplify lets make only 2^10
-    DMEM() : dmem_(std::vector<std::bitset<32>>(1024)) {}
+    // 2^12 words
+    DMEM() : dmem_(std::vector<std::bitset<32>>(4096)) {}
+
+    void Store(std::bitset<32> WD, std::bitset<32> A) {
+        dmem_.at(A.to_ulong()) = WD;
+    }
+
+    std::bitset<32> Load(std::bitset<32> A) {
+        return dmem_.at(A.to_ulong());
+    }
 
 private:
     std::vector<std::bitset<32>> dmem_;
