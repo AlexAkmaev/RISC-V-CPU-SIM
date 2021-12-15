@@ -233,19 +233,19 @@ void RISCVInstr::SelectR() {
 }
 
 std::bitset<5> RISCVInstr::getRs1() const noexcept {
-    assert(type_ == Format::R || type_ == Format::I || type_ == Format::S || type_ == Format::B);
+//    assert(type_ == Format::R || type_ == Format::I || type_ == Format::S || type_ == Format::B);
     std::bitset<5> rs1 = sub_range<19, 15>(instr_);
     return rs1;
 }
 
 std::bitset<5> RISCVInstr::getRs2() const noexcept {
-    assert(type_ == Format::R || type_ == Format::S || type_ == Format::B);
+//    assert(type_ == Format::R || type_ == Format::S || type_ == Format::B);
     std::bitset<5> rs2 = sub_range<24, 20>(instr_);
     return rs2;
 }
 
 std::bitset<5> RISCVInstr::getRd() const noexcept {
-    assert(type_ != Format::S || type_ != Format::B);
+//    assert(type_ != Format::S || type_ != Format::B);
     std::bitset<5> rd = sub_range<11, 7>(instr_);
     return rd;
 }

@@ -4,7 +4,6 @@ project(simulator)
 set(CMAKE_CXX_STANDARD 20)
 
 set(SIM_SOURCES
-    src/cpu.cpp
     src/simulator.cpp
     src/stages/Fetch.cpp
     src/stages/Decode.cpp
@@ -19,10 +18,12 @@ set(SIM_SOURCES
 include_directories(src)
 
 add_executable(cpu
+    src/cpu.cpp
     ${SIM_SOURCES}
 )
 
 set(SIM_TESTS
+    ${SIM_SOURCES}
     tests/RV32I_tests.cpp
 )
 

@@ -17,6 +17,7 @@ class Stage {
 public:
     virtual bool Run(Simulator &cpu) = 0;
     virtual bool Stall() = 0;
+    virtual ~Stage() {}
 };
 
 // Takes subset of a given bitset in range e.g. [x,x,xL,x,x,x,xR,x,x] -> N = 9, L = 6, R = 2

@@ -5,9 +5,9 @@
 
 class Fetch final : public Stage {
 public:
-    explicit Fetch() : imem_(IMEM{0}) {}
-    explicit Fetch(uint32_t instr_count) : imem_(IMEM{instr_count}) {}
-    explicit Fetch(std::vector<std::bitset<32>> &&imem) : imem_(std::move(imem)) {}
+    explicit Fetch() : imem_(IMEM{0}), is_set(false) {}
+    explicit Fetch(uint32_t instr_count) : imem_(IMEM{instr_count}), is_set(false) {}
+    explicit Fetch(std::vector<std::bitset<32>> &&imem) : imem_(std::move(imem)), is_set(true) {}
 
     bool Run(Simulator &cpu) override;
     bool Stall() override;

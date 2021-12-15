@@ -16,7 +16,6 @@ bool Fetch::Run(Simulator &cpu) {
 
     cpu.FDtransmitData();
 
-    is_set = false;
     return true;
 }
 
