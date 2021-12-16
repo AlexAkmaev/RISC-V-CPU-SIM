@@ -8,7 +8,7 @@ void ControlUnit::setState(const RISCVInstr &instr) {
             break;
         case RISCVInstr::Format::I:
             flags.ALU_SRC2 = false;
-            SelectWS(instr);
+            SelectLoadFlags(instr);
             break;
         case RISCVInstr::Format::S:
             flags.WB_WE = false;
@@ -105,13 +105,20 @@ void ControlUnit::SelectCMPOp(const RISCVInstr &instr) {
     }
 }
 
-void ControlUnit::SelectWS(const RISCVInstr &instr) {
+void ControlUnit::SelectLoadFlags(const RISCVInstr &instr) {
     switch (instr.getOpcode()) {
         case Opcode::LB:
-        case Opcode::LH:
-        case Opcode::LW:
         case Opcode::LBU:
+            flags.MEM_WIDTH = DMEM::Width::BYTE;
+            flags.WS = true;
+            break;
+        case Opcode::LH:
         case Opcode::LHU:
+            flags.MEM_WIDTH = DMEM::Width::HALF;
+            flags.WS = true;
+            break;
+        case Opcode::LW:
+            flags.MEM_WIDTH = DMEM::Width::WORD;
             flags.WS = true;
             break;
         default:

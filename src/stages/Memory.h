@@ -5,8 +5,7 @@
 
 class Memory final : public Stage {
 public:
-    bool Run(Simulator &cpu) override;
-    bool Stall() override;
+    PipelineState Run(Simulator &cpu) override;
 
     [[nodiscard]] std::bitset<32> ALU_OUT() const noexcept;
     [[nodiscard]] bool WB_WE() const noexcept;
@@ -16,6 +15,7 @@ public:
     void setWE_GEN(const WE_GEN &we_gen);
     void setD2(std::bitset<32> d2);
     void setWS(bool ws);
+    void setLWidth(DMEM::Width lwidth);
     void setALU_OUT(std::bitset<32> alu_out);
     void setWB_A(std::bitset<5> wb_a);
 
@@ -28,6 +28,7 @@ private:
     /*=== inputs ===*/
     WE_GEN we_gen_;
     bool ws_{false};
+    DMEM::Width lwidth_;
     std::bitset<32> D2;
     std::bitset<32> alu_out_;
     /*==============*/

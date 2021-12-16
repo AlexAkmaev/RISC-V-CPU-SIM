@@ -16,13 +16,16 @@ Simulator::Simulator(std::vector<std::bitset<32>> &&imem) {
     write_back_ = WriteBack{};
 }
 
-bool Simulator::Run() {
-    bool is_run = fetch_.Run(*this);
-    is_run &= decode_.Run(*this);
-    is_run &= execute_.Run(*this);
-    is_run &= memory_.Run(*this);
-    is_run &= write_back_.Run(*this);
-    return is_run;
+PipelineState Simulator::Run() {
+    PipelineState state;
+    while (true) {
+        fetch_.Run(*this);
+        decode_.Run(*this);
+        execute_.Run(*this);
+        memory_.Run(*this);
+        write_back_.Run(*this);
+    }
+    return state;
 }
 
 void Simulator::FDtransmitData() {
@@ -44,6 +47,7 @@ void Simulator::DEtransmitData() {
 void Simulator::EMtransmitData() {
     memory_.setWE_GEN(execute_.getWE_GEN());
     memory_.setWS(execute_.WS());
+    memory_.setLWidth(execute_.MEM_WIDTH());
     memory_.setD2(execute_.D2());
     memory_.setALU_OUT(execute_.ALU_OUT());
     memory_.setWB_A(execute_.WB_A());

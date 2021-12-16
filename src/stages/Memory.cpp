@@ -1,30 +1,27 @@
 #include "Memory.h"
 #include "simulator.h"
 
-bool Memory::Run(Simulator &cpu) {
+PipelineState Memory::Run(Simulator &cpu) {
     if (!is_set) {
-        return false;
+        return PipelineState::ERR;
     }
 
     if (ws_) {
         wb_we_ = we_gen_.WB_WE();
         if (we_gen_.MEM_WE()) {
-            dmem_.Store(D2, alu_out_);
+            dmem_.Store(D2, alu_out_, lwidth_);
         } else {
-            out_data_ = dmem_.Load(alu_out_);
+            out_data_ = dmem_.Load(alu_out_, lwidth_);
         }
     } else {
         out_data_ = alu_out_;
     }
+    cpu.hu_.setHU_MEM_RD_M(wb_a_, wb_we_);
 
     cpu.MWBtransmitData();
 
     is_set = false;
-    return true;
-}
-
-bool Memory::Stall() {
-    return true;
+    return PipelineState::OK;
 }
 
 std::bitset<32> Memory::ALU_OUT() const noexcept {
@@ -53,6 +50,10 @@ void Memory::setD2(std::bitset<32> d2) {
 
 void Memory::setWS(bool ws) {
     ws_ = ws;
+}
+
+void Memory::setLWidth(DMEM::Width lwidth) {
+    lwidth_ = lwidth;
 }
 
 void Memory::setALU_OUT(std::bitset<32> alu_out) {

@@ -1,9 +1,9 @@
 #include "Execute.h"
 #include "simulator.h"
 
-bool Execute::Run(Simulator &cpu) {
+PipelineState Execute::Run(Simulator &cpu) {
     if (!is_set) {
-        return false;
+        return PipelineState::ERR;
     }
 
     we_gen_ = WE_GEN{CONTROL_EX_.MEM_WE, CONTROL_EX_.WB_WE, v_ex_};
@@ -11,8 +11,10 @@ bool Execute::Run(Simulator &cpu) {
     wb_a_ = instr_.getRd();
     imm_ = IMM{instr_};
     PC_DISP_ = PC{imm_.getImm()};
-    auto RS1V = ChooseRS(true, cpu.hu_.HU_RS1(), cpu);
-    auto RS2V = ChooseRS(false, cpu.hu_.HU_RS2(), cpu);
+
+    cpu.hu_.setA1_A2_EX(instr_.getRs1(), instr_.getRs2());
+    auto RS1V = ChooseRS(cpu.hu_.HU_RS1(cpu), cpu);
+    auto RS2V = ChooseRS(cpu.hu_.HU_RS2(cpu), cpu);
 
     std::bitset<32> alu_src1;
     std::bitset<32> alu_src2;
@@ -28,22 +30,20 @@ bool Execute::Run(Simulator &cpu) {
     cpu.EMtransmitData();
 
     is_set = false;
-    return true;
+    return PipelineState::OK;
 }
 
-std::bitset<32> Execute::ChooseRS(bool rs, const HazardUnit::HU_RS &hu_rs, Simulator &cpu) const {
+std::bitset<32> Execute::ChooseRS(const HazardUnit::HU_RS &hu_rs, Simulator &cpu) const {
     switch (hu_rs) {
         case HazardUnit::HU_RS::D1:
-            return rs ? d1_ : d2_;
+            return d1_;
+        case HazardUnit::HU_RS::D2:
+            return d2_;
         case HazardUnit::HU_RS::BP_MEM:
             return cpu.memory_.ALU_OUT();
         case HazardUnit::HU_RS::BP_WB:
             return cpu.write_back_.WB_D();
     }
-}
-
-bool Execute::Stall() {
-    return true;
 }
 
 WE_GEN Execute::getWE_GEN() const noexcept {
@@ -72,6 +72,10 @@ PC Execute::PC_DISP() const noexcept {
 
 bool Execute::WS() const noexcept {
     return CONTROL_EX_.WS;
+}
+
+DMEM::Width Execute::MEM_WIDTH() const noexcept {
+    return CONTROL_EX_.MEM_WIDTH;
 }
 
 std::bitset<5> Execute::WB_A() const noexcept {

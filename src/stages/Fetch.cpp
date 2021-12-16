@@ -1,9 +1,9 @@
 #include "Fetch.h"
 #include "simulator.h"
 
-bool Fetch::Run(Simulator &cpu) {
+PipelineState Fetch::Run(Simulator &cpu) {
     if (!is_set) {
-        return false;
+        return PipelineState::ERR;
     }
 
     instr_ = RISCVInstr{imem_.getInstr(pc_)};
@@ -16,11 +16,7 @@ bool Fetch::Run(Simulator &cpu) {
 
     cpu.FDtransmitData();
 
-    return true;
-}
-
-bool Fetch::Stall() {
-    return false;
+    return PipelineState::OK;
 }
 
 RISCVInstr Fetch::getInstr() const noexcept {

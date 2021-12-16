@@ -9,8 +9,7 @@ public:
     explicit Fetch(uint32_t instr_count) : imem_(IMEM{instr_count}), is_set(false) {}
     explicit Fetch(std::vector<std::bitset<32>> &&imem) : imem_(std::move(imem)), is_set(true) {}
 
-    bool Run(Simulator &cpu) override;
-    bool Stall() override;
+    PipelineState Run(Simulator &cpu) override;
 
     [[nodiscard]] RISCVInstr getInstr() const noexcept;
     [[nodiscard]] PC getNextPC() const noexcept;
@@ -19,6 +18,7 @@ public:
     void setIMEM(IMEM &&imem) noexcept;
 
     bool is_set{false};
+    bool PC_EN{true};
 private:
     /*=== units ===*/
     IMEM imem_;

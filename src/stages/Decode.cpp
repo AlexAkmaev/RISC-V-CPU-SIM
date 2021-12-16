@@ -1,12 +1,13 @@
 #include "Decode.h"
 #include "simulator.h"
 
-bool Decode::Run(Simulator &cpu) {
+PipelineState Decode::Run(Simulator &cpu) {
     if (!is_set) {
-        return false;
+        return PipelineState::ERR;
     }
 
     cu_.setState(instr_);
+    cpu.hu_.setA1_A2_D(instr_.getRs1(), instr_.getRs2());
 
     D1 = reg_file_.Read(instr_.getRs1());
     D2 = reg_file_.Read(instr_.getRs2());
@@ -18,11 +19,7 @@ bool Decode::Run(Simulator &cpu) {
     cpu.DEtransmitData();
 
     is_set = false;
-    return true;
-}
-
-bool Decode::Stall() {
-    return true;
+    return PipelineState::OK;
 }
 
 ControlUnit::Flags Decode::getCUState() const noexcept {
@@ -35,6 +32,14 @@ std::bitset<32> Decode::getRD1() const noexcept {
 
 std::bitset<32> Decode::getRD2() const noexcept {
     return D2;
+}
+
+std::bitset<5> Decode::getA1() const noexcept {
+    return instr_.getRs1();
+}
+
+std::bitset<5> Decode::getA2() const noexcept {
+    return instr_.getRs2();
 }
 
 PC Decode::getPC() const noexcept {

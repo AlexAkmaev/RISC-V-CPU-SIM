@@ -6,8 +6,7 @@
 class WriteBack final : public Stage {
 public:
     explicit WriteBack() = default;
-    bool Run(Simulator &cpu) override;
-    bool Stall() override;
+    PipelineState Run(Simulator &cpu) override;
 
     [[nodiscard]] bool WB_WE() const noexcept;
     [[nodiscard]] std::bitset<5> WB_A() const noexcept;

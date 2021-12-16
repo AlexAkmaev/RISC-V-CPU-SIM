@@ -7,12 +7,13 @@
 class Decode final : public Stage {
 public:
     explicit Decode() = default;
-    bool Run(Simulator &cpu) override;
-    bool Stall() override;
+    PipelineState Run(Simulator &cpu) override;
 
     [[nodiscard]] ControlUnit::Flags getCUState() const noexcept;
     [[nodiscard]] std::bitset<32> getRD1() const noexcept;
     [[nodiscard]] std::bitset<32> getRD2() const noexcept;
+    [[nodiscard]] std::bitset<5> getA1() const noexcept;
+    [[nodiscard]] std::bitset<5> getA2() const noexcept;
     [[nodiscard]] RISCVInstr getInstr() const noexcept;
     [[nodiscard]] PC getPC() const noexcept;
     [[nodiscard]] bool V_DE() const noexcept;

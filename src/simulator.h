@@ -16,11 +16,11 @@
 #include "riscv/instruction.h"
 #include "riscv/opcodes.h"
 
-class Simulator final {
-public:
+struct Simulator final {
     explicit Simulator(uint32_t instr_count);
     explicit Simulator(std::vector<std::bitset<32>> &&imem);
-    bool Run();
+
+    PipelineState Run();
 
     void FDtransmitData();  // Fetch-Decode data transmition
     void DEtransmitData();  // Decode-Execute data transmition

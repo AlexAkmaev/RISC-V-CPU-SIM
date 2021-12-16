@@ -1,17 +1,15 @@
 #include "WriteBack.h"
 #include "simulator.h"
 
-bool WriteBack::Run(Simulator &cpu) {
+PipelineState WriteBack::Run(Simulator &cpu) {
     if (!is_set) {
-        return false;
+        return PipelineState::ERR;
     }
 
-    is_set = false;
-    return true;
-}
+    cpu.hu_.setHU_MEM_RD_WB(wb_a_, wb_we_);
 
-bool WriteBack::Stall() {
-    return true;
+    is_set = false;
+    return PipelineState::OK;
 }
 
 bool WriteBack::WB_WE() const noexcept {

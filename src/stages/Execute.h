@@ -7,8 +7,7 @@
 
 class Execute final : public Stage {
 public:
-    bool Run(Simulator &cpu) override;
-    bool Stall() override;
+    PipelineState Run(Simulator &cpu) override;
 
     [[nodiscard]] WE_GEN getWE_GEN() const noexcept;
     [[nodiscard]] std::bitset<32> ALU_OUT() const noexcept;
@@ -17,6 +16,7 @@ public:
     [[nodiscard]] PC PC_EX() const noexcept;
     [[nodiscard]] PC PC_DISP() const noexcept;
     [[nodiscard]] bool WS() const noexcept;
+    [[nodiscard]] DMEM::Width MEM_WIDTH() const noexcept;
     [[nodiscard]] std::bitset<5> WB_A() const noexcept;
 
     void setPC_EX(const PC &pc);
@@ -28,7 +28,7 @@ public:
     bool is_set{false};
 private:
     [[nodiscard]] std::bitset<32> ChooseRS(
-        bool rs, const HazardUnit::HU_RS &hu_rs, Simulator &cpu) const;  // rs - select D1 or D2
+        const HazardUnit::HU_RS &hu_rs, Simulator &cpu) const;  // rs - select D1 or D2
 
     /*=== units ===*/
     //  static ALU

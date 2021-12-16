@@ -13,11 +13,17 @@
 
 class Simulator;
 
+enum class PipelineState {
+    OK,
+    STALL,
+    BREAK,
+    ERR
+};
+
 class Stage {
 public:
-    virtual bool Run(Simulator &cpu) = 0;
-    virtual bool Stall() = 0;
-    virtual ~Stage() {}
+    virtual PipelineState Run(Simulator &cpu) = 0;
+    virtual ~Stage() = default;
 };
 
 // Takes subset of a given bitset in range e.g. [x,x,xL,x,x,x,xR,x,x] -> N = 9, L = 6, R = 2
@@ -40,7 +46,8 @@ std::bitset<N> concat(std::bitset<N_Args>... args) {
 
 template<std::size_t N>
 std::bitset<1> SignBit(std::bitset<N> imm) {
-    return imm[0] ? std::bitset<1>{1} : std::bitset<1>{0};
+    auto ans = imm[31] ? std::bitset<1>{1} : std::bitset<1>{0};
+    return ans;
 }
 
 template<std::size_t N>
@@ -195,7 +202,6 @@ public:
     }
 
     [[nodiscard]] std::bitset<32> getImm() const noexcept {
-        assert(type_ != Type::Imm_None);
         return imm_;
     }
 
@@ -308,15 +314,41 @@ private:
 
 class DMEM final {
 public:
-    // 2^12 words
-    DMEM() : dmem_(std::vector<std::bitset<32>>(4096)) {}
+    enum class Width {
+        BYTE,
+        HALF,
+        WORD
+    };
+    // Data Memory consists of 2^30 word, but let's make 2^10 to simplify
+    DMEM() : dmem_(std::vector<std::bitset<32>>(1024)) {}
 
-    void Store(std::bitset<32> WD, std::bitset<32> A) {
-        dmem_.at(A.to_ulong()) = WD;
+    void Store(std::bitset<32> WD, std::bitset<32> A, Width w_type = Width::WORD) {
+        switch (w_type) {
+            case Width::BYTE:
+                dmem_.at(A.to_ulong()) = concat<32>(std::bitset<24>{}, sub_range<7, 0>(WD));
+                break;
+            case Width::HALF:
+                dmem_.at(A.to_ulong()) = concat<32>(std::bitset<16>{}, sub_range<15, 0>(WD));
+                break;
+            case Width::WORD:
+                dmem_.at(A.to_ulong()) = WD;
+                break;
+        }
     }
 
-    std::bitset<32> Load(std::bitset<32> A) {
-        return dmem_.at(A.to_ulong());
+    std::bitset<32> Load(std::bitset<32> A, Width w_type = Width::WORD) {
+        switch (w_type) {
+            case Width::BYTE: {
+                auto byte = sub_range<7, 0>(dmem_.at(A.to_ulong()));
+                return concat<32>(SignExt<24>(SignBit(byte)), byte);
+            }
+            case Width::HALF: {
+                auto half_word = sub_range<15, 0>(dmem_.at(A.to_ulong()));
+                return concat<32>(SignExt<16>(SignBit(half_word)), half_word);
+            }
+            case Width::WORD:
+                return dmem_.at(A.to_ulong());
+        }
     }
 
 private:
