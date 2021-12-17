@@ -3,6 +3,7 @@ project(simulator)
 
 set(CMAKE_CXX_STANDARD 20)
 
+
 set(SIM_SOURCES
     src/simulator.cpp
     src/stages/Fetch.cpp
@@ -22,11 +23,15 @@ add_executable(cpu
     ${SIM_SOURCES}
 )
 
+# Locate GTest
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS})
+
 set(SIM_TESTS
     ${SIM_SOURCES}
     tests/RV32I_tests.cpp
 )
 
-add_executable(tests
-    ${SIM_TESTS}
-)
+# Link runTests with what we want to test and the GTest and pthread library
+add_executable(runTests ${SIM_TESTS})
+target_link_libraries(runTests ${GTEST_LIBRARIES} pthread)

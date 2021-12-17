@@ -6,6 +6,7 @@ PipelineState WriteBack::Run(Simulator &cpu) {
         return PipelineState::ERR;
     }
 
+    ++cycle;
     cpu.hu_.setHU_MEM_RD_WB(wb_a_, wb_we_);
 
     is_set = false;

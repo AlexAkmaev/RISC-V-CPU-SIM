@@ -6,6 +6,7 @@ PipelineState Memory::Run(Simulator &cpu) {
         return PipelineState::ERR;
     }
 
+    ++cycle;
     if (ws_) {
         wb_we_ = we_gen_.WB_WE();
         if (we_gen_.MEM_WE()) {

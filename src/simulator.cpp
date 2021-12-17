@@ -16,31 +16,32 @@ Simulator::Simulator(std::vector<std::bitset<32>> &&imem) {
     write_back_ = WriteBack{};
 }
 
-#define ASSERT_STATE(Run, State) \
-    if (Run == State) {          \
-        state = State;           \
-        break;                   \
+#define ASSERT_STATE(Run, State)                    \
+    if (Run == State) {                             \
+        state = State;                              \
+        break;                                      \
+    } else if (Run == PipelineState::BREAK) {       \
+        return PipelineState::OK;                   \
     }
 
 PipelineState Simulator::Run() {
-    PipelineState state = PipelineState::OK;
+    PipelineState state;
     while (true) {
-        ASSERT_STATE(fetch_.Run(*this), PipelineState::ERR);
-        ASSERT_STATE(decode_.Run(*this), PipelineState::ERR);
-        ASSERT_STATE(execute_.Run(*this), PipelineState::ERR);
-        ASSERT_STATE(memory_.Run(*this), PipelineState::ERR);
-        ASSERT_STATE(write_back_.Run(*this), PipelineState::ERR);
-        if (hu_.exception_state == PipelineState::BREAK) {
-            break;
-        }
+        ASSERT_STATE(fetch_.Run(*this), PipelineState::ERR)
+        ASSERT_STATE(decode_.Run(*this), PipelineState::ERR)
+        ASSERT_STATE(execute_.Run(*this), PipelineState::ERR)
+        ASSERT_STATE(memory_.Run(*this), PipelineState::ERR)
+        ASSERT_STATE(write_back_.Run(*this), PipelineState::ERR)
+        ASSERT_STATE(hu_.exception_state, PipelineState::ERR)
     }
     return state;
 }
 
 void Simulator::FDtransmitData() {
     decode_.setInstr(fetch_.getInstr());
-    decode_.setPC(fetch_.getNextPC());
+    decode_.setPC(fetch_.getPC());
     decode_.setPC_R(fetch_.PC_R());
+    fetch_.applyPC();
     decode_.is_set = true;
 }
 

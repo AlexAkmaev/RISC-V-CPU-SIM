@@ -1,21 +1,23 @@
 #include "simulator.h"
+#include <gtest/gtest.h>
 
-uint8_t test1() {
+TEST(SimulatorTest, test1) {
     /*
-        lw a0, 32(zero)
-        lw a1, 36(zero)
-        sub a2, a1, a0
-        sw a2, 40(zero)
+        addi a0, x0, 15
+        jr x0
     */
-    std::vector<std::bitset<32>> imem = { 0x02002503U, 0x02402583U, 0x40a58633U, 0x02c02423U };
+
+    std::vector<std::bitset<32>> imem = {
+        0x00f00513,
+        0x00000067
+    };
+
     Simulator cpu = Simulator{std::move(imem)};
-    if (cpu.Run() == PipelineState::ERR) {
-        return 1;
-    }
-    return 0;
+    ASSERT_NE(cpu.Run(), PipelineState::ERR);
+    ASSERT_EQ(cpu.decode_.getRegFile().Read({/* a0 */ 10}), std::bitset<32>{/* 15 */ 0x0000000f});
 }
 
-int main () {
-    uint8_t err = test1();
-    return err;
+int main(int argc, char **argv) {
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

@@ -22,6 +22,7 @@ enum class PipelineState {
 
 class Stage {
 public:
+    uint32_t cycle = 0;
     virtual PipelineState Run(Simulator &cpu) = 0;
     virtual ~Stage() = default;
 };
@@ -148,7 +149,7 @@ public:
         regs_[idx] = D3;
     }
 
-    std::bitset<32> Read(std::bitset<5> A) {  // A is A1 or A2 - idx of source register
+    std::bitset<32> Read(std::bitset<5> A) const {  // A is A1 or A2 - idx of source register
         uint8_t idx = A.to_ulong();
         assert(idx < 32);
         return regs_.at(idx);

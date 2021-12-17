@@ -22,6 +22,9 @@ public:
     void setPC(const PC &pc);
     void setPC_R(bool pc_f);
 
+    // for tests
+    const RegisterFile& getRegFile() const noexcept;
+
     bool is_set{false};
 private:
     /*=== units ===*/

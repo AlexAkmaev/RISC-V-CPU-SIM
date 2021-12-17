@@ -12,10 +12,12 @@ public:
     PipelineState Run(Simulator &cpu) override;
 
     [[nodiscard]] RISCVInstr getInstr() const noexcept;
+    [[nodiscard]] PC getPC() const noexcept;
     [[nodiscard]] PC getNextPC() const noexcept;
     [[nodiscard]] bool PC_R() const noexcept;
 
     void setIMEM(IMEM &&imem) noexcept;
+    void applyPC() noexcept;
 
     bool is_set{false};
 private:
@@ -24,7 +26,6 @@ private:
     /*=============*/
 
     /*=== inputs ===*/
-    PC pc_{0};
     //  JALR
     //  rs1
     /*==============*/
@@ -34,6 +35,10 @@ private:
     PC pc_next_{0};
     bool pc_r_{false};
     /*===============*/
+
+    /*=== fallthrough ===*/
+    PC pc_{0};
+    /*===================*/
 };
 
 #endif //SIMULATOR_FETCH_H

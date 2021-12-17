@@ -34,7 +34,7 @@ RISCVInstr::RISCVInstr(const std::bitset<32> i)  : instr_(i) {
             SelectS();
             break;
         case 0b0010011:
-            type_ = Format::S;
+            type_ = Format::I;
             SelectII();
             break;
         case 0b0110011:

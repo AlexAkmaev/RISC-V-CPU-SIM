@@ -6,6 +6,7 @@ PipelineState Execute::Run(Simulator &cpu) {
         return PipelineState::ERR;
     }
 
+    ++cycle;
     we_gen_ = WE_GEN{CONTROL_EX_.MEM_WE, CONTROL_EX_.WB_WE, v_ex_};
 
     wb_a_ = instr_.getRd();

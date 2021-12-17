@@ -6,6 +6,7 @@ PipelineState Decode::Run(Simulator &cpu) {
         return PipelineState::ERR;
     }
 
+    ++cycle;
     cu_.setState(instr_);
     cpu.hu_.setA1_A2_D(instr_.getRs1(), instr_.getRs2());
 
@@ -65,4 +66,8 @@ void Decode::setPC(const PC &pc) {
 
 void Decode::setPC_R(bool pc_f) {
     pc_f_ = pc_f;
+}
+
+const RegisterFile &Decode::getRegFile() const noexcept {
+    return reg_file_;
 }
