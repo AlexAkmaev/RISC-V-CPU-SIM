@@ -9,25 +9,22 @@ PipelineState Execute::Run(Simulator &cpu) {
     we_gen_ = WE_GEN{CONTROL_EX_.MEM_WE, CONTROL_EX_.WB_WE, v_ex_};
 
     wb_a_ = instr_.getRd();
-    imm_ = IMM{instr_};
+    imm_ = IMM{instr_, CONTROL_EX_.JALR};
     PC_DISP_ = PC{imm_.getImm()};
 
     cpu.hu_.setA1_A2_EX(instr_.getRs1(), instr_.getRs2());
     auto RS1V = ChooseRS(cpu.hu_.HU_RS1(cpu), cpu);
     auto RS2V = ChooseRS(cpu.hu_.HU_RS2(cpu), cpu);
 
-    std::bitset<32> alu_src1;
-    std::bitset<32> alu_src2;
-    if (CONTROL_EX_.ALU_SRC2) {
-        alu_src2 = RS2V;
-    } else {
-        alu_src2 = imm_.getImm();
-    }
+    std::bitset<32> alu_src1 = CONTROL_EX_.ALU_SRC1 ? RS1V : std::bitset<32>{PC_EX_.val()};
+    std::bitset<32> alu_src2 = CONTROL_EX_.ALU_SRC2 ? RS2V : imm_.getImm();
 
     alu_out_ = ALU::calc(alu_src1, alu_src2, CONTROL_EX_.ALU_OP);
-    PC_R_ = CMP::calc(RS1V, RS2V, CONTROL_EX_.CMP_OP) && CONTROL_EX_.BRANCH_COND || CONTROL_EX_.JMP;
+    PC_R_ = CMP::calc(RS1V, RS2V, CONTROL_EX_.CMP_OP) &&
+            CONTROL_EX_.BRANCH_COND || CONTROL_EX_.JMP || CONTROL_EX_.JALR;
 
     cpu.EMtransmitData();
+    cpu.hu_.CheckForStall(CONTROL_EX_.WS, wb_a_);
 
     is_set = false;
     return PipelineState::OK;
@@ -54,6 +51,10 @@ std::bitset<32> Execute::ALU_OUT() const noexcept {
     return alu_out_;
 }
 
+std::bitset<32> Execute::D1() const noexcept {
+    return d1_;
+}
+
 std::bitset<32> Execute::D2() const noexcept {
     return d2_;
 }
@@ -68,6 +69,10 @@ PC Execute::PC_EX() const noexcept {
 
 PC Execute::PC_DISP() const noexcept {
     return PC_DISP_;
+}
+
+bool Execute::JALR() const noexcept {
+    return CONTROL_EX_.JALR;
 }
 
 bool Execute::WS() const noexcept {

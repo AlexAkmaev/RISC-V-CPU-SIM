@@ -18,7 +18,6 @@ public:
     void setIMEM(IMEM &&imem) noexcept;
 
     bool is_set{false};
-    bool PC_EN{true};
 private:
     /*=== units ===*/
     IMEM imem_;
@@ -26,6 +25,8 @@ private:
 
     /*=== inputs ===*/
     PC pc_{0};
+    //  JALR
+    //  rs1
     /*==============*/
 
     /*=== outputs ===*/

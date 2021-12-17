@@ -12,19 +12,26 @@ public:
         BP_WB
     };
 
-    [[nodiscard]] HU_RS HU_RS1(Simulator &cpu);
-    [[nodiscard]] HU_RS HU_RS2(Simulator &cpu);
+    [[nodiscard]] HU_RS HU_RS1(Simulator &cpu) noexcept;
+    [[nodiscard]] HU_RS HU_RS2(Simulator &cpu) noexcept;
+    bool CheckForStall(bool ws_ex, std::bitset<5> rd) noexcept;
+    [[nodiscard]] bool FD_EN() const noexcept;
+    [[nodiscard]] bool PC_EN() const noexcept;
 
     void setHU_MEM_RD_M(std::bitset<5> wb_a, bool wb_we);
     void setHU_MEM_RD_WB(std::bitset<5> wb_a, bool wb_we);
     void setA1_A2_D(std::bitset<5> a1, std::bitset<5> a2);
     void setA1_A2_EX(std::bitset<5> a1, std::bitset<5> a2);
 
-    PipelineState pl_state;
+    PipelineState pl_state{PipelineState::OK};
+    PipelineState exception_state{PipelineState::OK};
 private:
     /*=== outputs ===*/
-    HU_RS hu_rs1_;
-    HU_RS hu_rs2_;
+    //  HU_RS1;
+    //  HU_RS2;
+    //  isStall
+    bool pc_en_{true};
+    bool fd_en_{true};
     /*===============*/
 
     /*=== inputs ====*/

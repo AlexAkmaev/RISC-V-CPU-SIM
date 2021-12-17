@@ -8,9 +8,8 @@ uint8_t test1() {
         sw a2, 40(zero)
     */
     std::vector<std::bitset<32>> imem = { 0x02002503U, 0x02402583U, 0x40a58633U, 0x02c02423U };
-//    std::vector<std::bitset<32>> imem = { 0x02002503U, 0x02402583U, 0x40a58633U, 0x02c02423U };
     Simulator cpu = Simulator{std::move(imem)};
-    if (!cpu.Run()) {
+    if (cpu.Run() == PipelineState::ERR) {
         return 1;
     }
     return 0;

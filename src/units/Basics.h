@@ -111,15 +111,24 @@ private:
 
 class IMEM final {
 public:
+    IMEM() = default;
     explicit IMEM(uint32_t instr_count) : imem_(std::vector<std::bitset<32>>(instr_count)) {}
     explicit IMEM(std::vector<std::bitset<32>> &&imem) : imem_(std::move(imem)) {}
 
-    void addToImem(const PC &pc, std::bitset<32> instr) {
+    void pushBackInstr(std::bitset<32> instr) {
+        imem_.push_back(instr);
+    }
+
+    void AssignInstrByPC(const PC &pc, std::bitset<32> instr) {
         imem_[pc.val()] = instr;
     }
 
-    std::bitset<32> getInstr(const PC &pc) {
+    [[nodiscard]] std::bitset<32> getInstr(const PC &pc) const noexcept {
         return imem_.at(pc.val());
+    }
+
+    [[nodiscard]] std::vector<std::bitset<32>> getRawImem() const noexcept {
+        return imem_;
     }
 
 private:
@@ -163,15 +172,16 @@ public:
     };
 
     IMM() : type_(Type::Imm_None), imm_({}) {}
-    explicit IMM(const RISCVInstr &instr) {
+    explicit IMM(const RISCVInstr &instr, bool is_jalr = false) {
         std::bitset<32> ins_bits = instr.getInstr();
         switch (instr.getFormat()) {
             case RISCVInstr::Format::R:
                 type_ = Type::Imm_None;
                 break;
             case RISCVInstr::Format::I: {
-                type_ = Type::Imm_I;
-                imm_ = concat<32>(SignExt<21>(SignBit(ins_bits)), sub_range<30, 20>(ins_bits));
+                type_ = is_jalr ? Type::Imm_None : Type::Imm_I;
+                imm_ = is_jalr ? std::bitset<32>{4} :
+                    concat<32>(SignExt<21>(SignBit(ins_bits)), sub_range<30, 20>(ins_bits));
                 break;
             }
             case RISCVInstr::Format::S: {
@@ -241,14 +251,8 @@ public:
                 return lhs << rhs.to_ulong();
             case Op::SRL:
                 return lhs >> rhs.to_ulong();
-            case Op::SRA: {
-                std::cerr << "TODO\n";
-                return {};
-//                std::bitset<32> res = lhs >> rhs.to_ulong();
-//                /**??**/
-//                res[0] = res[1];
-//                return res;
-            }
+            case Op::SRA:
+                return static_cast<int32_t>(lhs.to_ulong()) >> rhs.to_ulong();
             case Op::SLT:
                 return (static_cast<int32_t>(lhs.to_ulong()) < static_cast<int32_t>(rhs.to_ulong())) ? 1 : 0;
             case Op::SLTU:

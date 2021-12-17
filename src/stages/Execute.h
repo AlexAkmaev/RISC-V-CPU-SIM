@@ -11,10 +11,12 @@ public:
 
     [[nodiscard]] WE_GEN getWE_GEN() const noexcept;
     [[nodiscard]] std::bitset<32> ALU_OUT() const noexcept;
+    [[nodiscard]] std::bitset<32> D1() const noexcept;
     [[nodiscard]] std::bitset<32> D2() const noexcept;
     [[nodiscard]] bool PC_R() const noexcept;
     [[nodiscard]] PC PC_EX() const noexcept;
     [[nodiscard]] PC PC_DISP() const noexcept;
+    [[nodiscard]] bool JALR() const noexcept;
     [[nodiscard]] bool WS() const noexcept;
     [[nodiscard]] DMEM::Width MEM_WIDTH() const noexcept;
     [[nodiscard]] std::bitset<5> WB_A() const noexcept;

@@ -16,14 +16,23 @@ Simulator::Simulator(std::vector<std::bitset<32>> &&imem) {
     write_back_ = WriteBack{};
 }
 
+#define ASSERT_STATE(Run, State) \
+    if (Run == State) {          \
+        state = State;           \
+        break;                   \
+    }
+
 PipelineState Simulator::Run() {
-    PipelineState state;
+    PipelineState state = PipelineState::OK;
     while (true) {
-        fetch_.Run(*this);
-        decode_.Run(*this);
-        execute_.Run(*this);
-        memory_.Run(*this);
-        write_back_.Run(*this);
+        ASSERT_STATE(fetch_.Run(*this), PipelineState::ERR);
+        ASSERT_STATE(decode_.Run(*this), PipelineState::ERR);
+        ASSERT_STATE(execute_.Run(*this), PipelineState::ERR);
+        ASSERT_STATE(memory_.Run(*this), PipelineState::ERR);
+        ASSERT_STATE(write_back_.Run(*this), PipelineState::ERR);
+        if (hu_.exception_state == PipelineState::BREAK) {
+            break;
+        }
     }
     return state;
 }

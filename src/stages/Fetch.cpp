@@ -7,11 +7,23 @@ PipelineState Fetch::Run(Simulator &cpu) {
     }
 
     instr_ = RISCVInstr{imem_.getInstr(pc_)};
-    pc_r_ = cpu.execute_.PC_R();
-    if (!pc_r_) {
-        pc_next_ += 4;
-    } else {
-        pc_next_ = cpu.execute_.PC_EX() + cpu.execute_.PC_DISP();
+    if (cpu.hu_.PC_EN()) {
+        pc_r_ = cpu.execute_.PC_R();
+        if (!pc_r_) {
+            pc_next_ += 4;
+        } else {
+            pc_next_ = (cpu.execute_.JALR() ? PC{cpu.execute_.D1()} : cpu.execute_.PC_EX()) + cpu.execute_.PC_DISP();
+        }
+    }
+    pc_ = pc_next_;
+
+    if (cpu.execute_.JALR() && cpu.execute_.WB_A() == std::bitset<5>{0}) {
+        cpu.hu_.exception_state = PipelineState::BREAK;
+    }
+
+    // Prohibit data transmission through the register while stall
+    if (!cpu.hu_.FD_EN()) {
+        return PipelineState::STALL;
     }
 
     cpu.FDtransmitData();

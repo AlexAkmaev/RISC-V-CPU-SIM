@@ -8,6 +8,7 @@ public:
     /* True = 1, false = 0 for multiplexer flags */
     struct Flags final {
         bool WB_WE{true};  // reg file write enable
+        bool ALU_SRC1{true};
         bool ALU_SRC2{true};
         ALU::Op ALU_OP;
         CMP::Op CMP_OP;
@@ -16,6 +17,7 @@ public:
         bool WS{false};  // write source
         bool BRANCH_COND{false};
         bool JMP{false};
+        bool JALR{false};
     } flags;
 
     void setState(const RISCVInstr &instr);

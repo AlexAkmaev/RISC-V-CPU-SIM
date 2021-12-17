@@ -7,6 +7,10 @@ void ControlUnit::setState(const RISCVInstr &instr) {
             SelectALUOp(instr);
             break;
         case RISCVInstr::Format::I:
+            if (instr.getOpcode() == Opcode::JALR) {
+                flags.JALR = true;
+                flags.ALU_SRC1 = false;
+            }
             flags.ALU_SRC2 = false;
             SelectLoadFlags(instr);
             break;

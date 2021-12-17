@@ -1,16 +1,23 @@
+#include <fstream>
 #include "simulator.h"
 
-int main() {
-//    std::bitset<16> bb{"1111111111110110"};
-//    std::bitset<32> bb = -1;
-//    std::bitset<32> bb{"11111111111111111111111111111110"};
-//    std::bitset<32> bb{"1111000010011111100011111011001"};
-//    std::cout << bb.to_ulong() << std::endl;
-//    std::cout << bb.to_string() << std::endl;
-//    std::cout << static_cast<int32_t>(bb.to_ulong()) << std::endl;
-    Simulator cpu = Simulator{1};
-    if (!cpu.Run()) {
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        std::cerr << "No file passed to cpu" << std::endl;
         return 1;
     }
+
+    IMEM imem;
+    std::ifstream file((std::string(argv[1])));
+    std::string ins_bits;
+    while (std::getline(file, ins_bits)) {
+        imem.pushBackInstr(std::bitset<32>{ins_bits});
+    }
+
+    Simulator cpu = Simulator{std::move(imem.getRawImem())};
+    if (cpu.Run() == PipelineState::ERR) {
+        return 2;
+    }
+
     return 0;
 }

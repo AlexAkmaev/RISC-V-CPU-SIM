@@ -15,7 +15,8 @@ PipelineState Decode::Run(Simulator &cpu) {
         reg_file_.Write(cpu.write_back_.WB_A(), cpu.write_back_.WB_D());
     }
 
-    v_de_ = !(pc_f_ || cpu.execute_.PC_R());
+    v_de_ = !(pc_f_ || cpu.execute_.PC_R() || cpu.hu_.pl_state == PipelineState::STALL);
+
     cpu.DEtransmitData();
 
     is_set = false;
