@@ -3,10 +3,11 @@
 
 PipelineState Memory::Run(Simulator &cpu) {
     if (!is_set) {
-        return PipelineState::ERR;
+        return PipelineState::OK;
     }
 
-    ++cycle;
+    cpu.MWBtransmitData();
+
     if (ws_) {
         wb_we_ = we_gen_.WB_WE();
         if (we_gen_.MEM_WE()) {
@@ -18,8 +19,6 @@ PipelineState Memory::Run(Simulator &cpu) {
         out_data_ = alu_out_;
     }
     cpu.hu_.setHU_MEM_RD_M(wb_a_, wb_we_);
-
-    cpu.MWBtransmitData();
 
     is_set = false;
     return PipelineState::OK;

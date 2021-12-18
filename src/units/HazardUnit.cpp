@@ -58,6 +58,9 @@ void HazardUnit::setHU_MEM_RD_M(std::bitset<5> wb_a, bool wb_we) {
 void HazardUnit::setHU_MEM_RD_WB(std::bitset<5> wb_a, bool wb_we) {
     hu_mem_rd_wb_ = wb_a;
     wb_we_wb_ = wb_we;
+    if (wb_we && wb_a == std::bitset<5>{/* x0 */ 0}) {
+        exception_state = PipelineState::BREAK;
+    }
 }
 
 void HazardUnit::setA1_A2_D(std::bitset<5> a1, std::bitset<5> a2) {

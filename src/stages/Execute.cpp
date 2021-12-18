@@ -3,10 +3,11 @@
 
 PipelineState Execute::Run(Simulator &cpu) {
     if (!is_set) {
-        return PipelineState::ERR;
+        return PipelineState::OK;
     }
 
-    ++cycle;
+    cpu.EMtransmitData();
+
     we_gen_ = WE_GEN{CONTROL_EX_.MEM_WE, CONTROL_EX_.WB_WE, v_ex_};
 
     wb_a_ = instr_.getRd();
@@ -24,7 +25,6 @@ PipelineState Execute::Run(Simulator &cpu) {
     PC_R_ = CMP::calc(RS1V, RS2V, CONTROL_EX_.CMP_OP) &&
             CONTROL_EX_.BRANCH_COND || CONTROL_EX_.JMP || CONTROL_EX_.JALR;
 
-    cpu.EMtransmitData();
     cpu.hu_.CheckForStall(CONTROL_EX_.WS, wb_a_);
 
     is_set = false;

@@ -125,6 +125,9 @@ public:
     }
 
     [[nodiscard]] std::bitset<32> getInstr(const PC &pc) const noexcept {
+        if (pc.val() == 32) {
+            return {};
+        }
         return imem_.at(pc.val());
     }
 
@@ -311,8 +314,8 @@ public:
     }
 
 private:
-    bool mem_we_{true};
-    bool wb_we_{true};
+    bool mem_we_{false};
+    bool wb_we_{false};
 };
 
 /*======== Memory units ===========*/

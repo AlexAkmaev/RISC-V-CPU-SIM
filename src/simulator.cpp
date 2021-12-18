@@ -16,28 +16,34 @@ Simulator::Simulator(std::vector<std::bitset<32>> &&imem) {
     write_back_ = WriteBack{};
 }
 
-#define ASSERT_STATE(Run, State)                    \
-    if (Run == State) {                             \
-        state = State;                              \
-        break;                                      \
-    } else if (Run == PipelineState::BREAK) {       \
+#define ASSERT_STATE(Run)                           \
+    state = (Run);                                  \
+    if (state == PipelineState::ERR) {              \
+        return PipelineState::ERR;                  \
+    } else if (state == PipelineState::BREAK) {     \
         return PipelineState::OK;                   \
     }
 
 PipelineState Simulator::Run() {
     PipelineState state;
     while (true) {
-        ASSERT_STATE(fetch_.Run(*this), PipelineState::ERR)
-        ASSERT_STATE(decode_.Run(*this), PipelineState::ERR)
-        ASSERT_STATE(execute_.Run(*this), PipelineState::ERR)
-        ASSERT_STATE(memory_.Run(*this), PipelineState::ERR)
-        ASSERT_STATE(write_back_.Run(*this), PipelineState::ERR)
-        ASSERT_STATE(hu_.exception_state, PipelineState::ERR)
+        ASSERT_STATE(fetch_.Run(*this))
+        ASSERT_STATE(decode_.Run(*this))
+        ASSERT_STATE(execute_.Run(*this))
+        ASSERT_STATE(memory_.Run(*this))
+        ASSERT_STATE(write_back_.Run(*this))
+        ASSERT_STATE(hu_.exception_state)
     }
-    return state;
 }
 
+#define CYCLE_CONTROL(prev, next)           \
+    ++(prev);                               \
+    if ((prev) - (next) < 2) {              \
+        return;                             \
+    }
+
 void Simulator::FDtransmitData() {
+    CYCLE_CONTROL(fetch_.cycle, decode_.cycle)
     decode_.setInstr(fetch_.getInstr());
     decode_.setPC(fetch_.getPC());
     decode_.setPC_R(fetch_.PC_R());
@@ -46,6 +52,7 @@ void Simulator::FDtransmitData() {
 }
 
 void Simulator::DEtransmitData() {
+    CYCLE_CONTROL(decode_.cycle, execute_.cycle)
     execute_.setV_EX(decode_.V_DE());
     execute_.setD1_D2(decode_.getRD1(), decode_.getRD2());
     execute_.setInstr(decode_.getInstr());
@@ -55,6 +62,7 @@ void Simulator::DEtransmitData() {
 }
 
 void Simulator::EMtransmitData() {
+    CYCLE_CONTROL(execute_.cycle, memory_.cycle)
     memory_.setWE_GEN(execute_.getWE_GEN());
     memory_.setWS(execute_.WS());
     memory_.setLWidth(execute_.MEM_WIDTH());
@@ -65,6 +73,7 @@ void Simulator::EMtransmitData() {
 }
 
 void Simulator::MWBtransmitData() {
+    CYCLE_CONTROL(memory_.cycle, write_back_.cycle)
     write_back_.setWB_WE(memory_.WB_WE());
     write_back_.setWB_D(memory_.getOutData());
     write_back_.setWB_A(memory_.WB_A());

@@ -3,10 +3,11 @@
 
 PipelineState Decode::Run(Simulator &cpu) {
     if (!is_set) {
-        return PipelineState::ERR;
+        return PipelineState::OK;
     }
 
-    ++cycle;
+    cpu.DEtransmitData();
+
     cu_.setState(instr_);
     cpu.hu_.setA1_A2_D(instr_.getRs1(), instr_.getRs2());
 
@@ -17,8 +18,6 @@ PipelineState Decode::Run(Simulator &cpu) {
     }
 
     v_de_ = !(pc_f_ || cpu.execute_.PC_R() || cpu.hu_.pl_state == PipelineState::STALL);
-
-    cpu.DEtransmitData();
 
     is_set = false;
     return PipelineState::OK;

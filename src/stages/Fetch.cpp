@@ -3,13 +3,15 @@
 
 PipelineState Fetch::Run(Simulator &cpu) {
     if (!is_set) {
-        return PipelineState::ERR;
+        return PipelineState::OK;
     }
 
-    ++cycle;
-    if (cpu.decode_.getCUState().JALR && !pc_r_) {
-        return PipelineState::BREAK;
+    // Prohibit data transmission through the register while stall
+    if (!cpu.hu_.FD_EN()) {
+        return PipelineState::STALL;
     }
+
+    cpu.FDtransmitData();
 
     if (cpu.hu_.PC_EN()) {
         instr_ = RISCVInstr{imem_.getInstr(pc_)};
@@ -24,13 +26,6 @@ PipelineState Fetch::Run(Simulator &cpu) {
     if (cpu.execute_.JALR() && cpu.execute_.WB_A() == std::bitset<5>{0}) {
         cpu.hu_.exception_state = PipelineState::BREAK;
     }
-
-    // Prohibit data transmission through the register while stall
-    if (!cpu.hu_.FD_EN()) {
-        return PipelineState::STALL;
-    }
-
-    cpu.FDtransmitData();
 
     return PipelineState::OK;
 }

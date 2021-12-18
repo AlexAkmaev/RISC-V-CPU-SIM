@@ -3,7 +3,7 @@
 
 PipelineState WriteBack::Run(Simulator &cpu) {
     if (!is_set) {
-        return PipelineState::ERR;
+        return PipelineState::OK;
     }
 
     ++cycle;
