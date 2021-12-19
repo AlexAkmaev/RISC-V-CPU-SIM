@@ -21,9 +21,10 @@ public:
     void setInstr(const RISCVInstr &instr);
     void setPC(const PC &pc);
     void setPC_R(bool pc_f);
+    void writeToRF(std::bitset<5> A3, std::bitset<32> D3, bool wb_we);
 
     // for tests
-    const RegisterFile& getRegFile() const noexcept;
+    [[nodiscard]] const RegisterFile& getRegFile() const noexcept;
 
     bool is_set{false};
 private:

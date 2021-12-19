@@ -116,6 +116,10 @@ public:
     explicit IMEM(uint32_t instr_count) : imem_(std::vector<std::bitset<32>>(instr_count)) {}
     explicit IMEM(std::vector<std::bitset<32>> &&imem) : imem_(std::move(imem)) {}
 
+    [[nodiscard]] bool isEndOfIMEM(const PC &pc) const noexcept {
+        return (pc.val() == imem_.size());
+    }
+
     void pushBackInstr(std::bitset<32> instr) {
         imem_.push_back(instr);
     }
@@ -125,9 +129,6 @@ public:
     }
 
     [[nodiscard]] std::bitset<32> getInstr(const PC &pc) const noexcept {
-        if (pc.val() == 32) {
-            return {};
-        }
         return imem_.at(pc.val());
     }
 
@@ -152,7 +153,7 @@ public:
         regs_[idx] = D3;
     }
 
-    std::bitset<32> Read(std::bitset<5> A) const {  // A is A1 or A2 - idx of source register
+    [[nodiscard]] std::bitset<32> Read(std::bitset<5> A) const {  // A is A1 or A2 - idx of source register
         uint8_t idx = A.to_ulong();
         assert(idx < 32);
         return regs_.at(idx);

@@ -43,7 +43,7 @@ RISCVInstr::RISCVInstr(const std::bitset<32> i)  : instr_(i) {
             break;
         case 0b1110011: {
             type_ = Format::I;
-            op_ = instr_[11] ? op_ = Opcode::EBREAK : Opcode::ECALL;
+            op_ = instr_[20] ? op_ = Opcode::EBREAK : Opcode::ECALL;
             break;
         }
         default:

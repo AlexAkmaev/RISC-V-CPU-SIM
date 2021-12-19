@@ -6,12 +6,10 @@ PipelineState Fetch::Run(Simulator &cpu) {
         return PipelineState::OK;
     }
 
-    // Prohibit data transmission through the register while stall
-    if (!cpu.hu_.FD_EN()) {
-        return PipelineState::STALL;
+    if (imem_.isEndOfIMEM(pc_next_)) {
+        instr_ = RISCVInstr(std::bitset<32>{/* ebreak */ 0x100073});
+        cpu.hu_.sendEndOfIMEM();
     }
-
-    cpu.FDtransmitData();
 
     if (cpu.hu_.PC_EN()) {
         instr_ = RISCVInstr{imem_.getInstr(pc_)};
@@ -23,9 +21,12 @@ PipelineState Fetch::Run(Simulator &cpu) {
         }
     }
 
-    if (cpu.execute_.JALR() && cpu.execute_.WB_A() == std::bitset<5>{0}) {
-        cpu.hu_.exception_state = PipelineState::BREAK;
+    // Prohibit data transmission through the register while stall
+    if (!cpu.hu_.FD_EN()) {
+        return PipelineState::STALL;
     }
+
+    cpu.FDtransmitData();
 
     return PipelineState::OK;
 }

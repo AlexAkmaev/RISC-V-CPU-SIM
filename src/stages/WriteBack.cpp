@@ -3,11 +3,15 @@
 
 PipelineState WriteBack::Run(Simulator &cpu) {
     if (!is_set) {
-        return PipelineState::OK;
+        return PipelineState::STALL;
     }
 
-    ++cycle;
+    if (ebreak_) {
+        return PipelineState::BREAK;
+    }
+
     cpu.hu_.setHU_MEM_RD_WB(wb_a_, wb_we_);
+    cpu.decode_.writeToRF(wb_a_, wb_d_, wb_we_);
 
     is_set = false;
     return PipelineState::OK;
@@ -35,4 +39,8 @@ void WriteBack::setWB_D(std::bitset<32> wb_d) {
 
 void WriteBack::setWB_WE(bool wb_we) {
     wb_we_ = wb_we;
+}
+
+void WriteBack::setEBREAK(bool eb) {
+    ebreak_ = eb;
 }

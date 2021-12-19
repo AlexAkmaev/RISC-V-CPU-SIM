@@ -17,6 +17,7 @@ public:
     [[nodiscard]] PC PC_EX() const noexcept;
     [[nodiscard]] PC PC_DISP() const noexcept;
     [[nodiscard]] bool JALR() const noexcept;
+    [[nodiscard]] bool EBREAK() const noexcept;
     [[nodiscard]] bool WS() const noexcept;
     [[nodiscard]] DMEM::Width MEM_WIDTH() const noexcept;
     [[nodiscard]] std::bitset<5> WB_A() const noexcept;

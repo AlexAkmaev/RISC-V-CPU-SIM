@@ -9,6 +9,7 @@ public:
 
     [[nodiscard]] std::bitset<32> ALU_OUT() const noexcept;
     [[nodiscard]] bool WB_WE() const noexcept;
+    [[nodiscard]] bool EBREAK() const noexcept;
     [[nodiscard]] std::bitset<5> WB_A() const noexcept;
     [[nodiscard]] std::bitset<32> getOutData() const noexcept;
 
@@ -18,6 +19,7 @@ public:
     void setLWidth(DMEM::Width lwidth);
     void setALU_OUT(std::bitset<32> alu_out);
     void setWB_A(std::bitset<5> wb_a);
+    void setEBREAK(bool eb);
 
     bool is_set{false};
 private:
@@ -40,6 +42,7 @@ private:
 
     /*=== fallthrough ===*/
     std::bitset<5> wb_a_;
+    bool ebreak_;
     /*===================*/
 };
 

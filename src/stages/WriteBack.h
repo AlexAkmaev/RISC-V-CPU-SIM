@@ -15,10 +15,12 @@ public:
     void setWB_A(std::bitset<5> wb_a);
     void setWB_D(std::bitset<32> wb_d);
     void setWB_WE(bool wb_we);
+    void setEBREAK(bool eb);
 
     bool is_set{false};
 private:
     bool wb_we_{false};
+    bool ebreak_{false};
     std::bitset<32> wb_d_;
     std::bitset<5> wb_a_;
 };

@@ -72,3 +72,7 @@ void HazardUnit::setA1_A2_EX(std::bitset<5> a1, std::bitset<5> a2) {
     a1_ex_ = a1;
     a2_ex_ = a2;
 }
+
+void HazardUnit::sendEndOfIMEM() {
+    pc_en_ = false;
+}

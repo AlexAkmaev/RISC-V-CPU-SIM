@@ -3,21 +3,18 @@
 
 PipelineState Decode::Run(Simulator &cpu) {
     if (!is_set) {
-        return PipelineState::OK;
+        return PipelineState::STALL;
     }
-
-    cpu.DEtransmitData();
 
     cu_.setState(instr_);
     cpu.hu_.setA1_A2_D(instr_.getRs1(), instr_.getRs2());
 
     D1 = reg_file_.Read(instr_.getRs1());
     D2 = reg_file_.Read(instr_.getRs2());
-    if (cpu.write_back_.WB_WE()) {
-        reg_file_.Write(cpu.write_back_.WB_A(), cpu.write_back_.WB_D());
-    }
 
     v_de_ = !(pc_f_ || cpu.execute_.PC_R() || cpu.hu_.pl_state == PipelineState::STALL);
+
+    cpu.DEtransmitData();
 
     is_set = false;
     return PipelineState::OK;
@@ -69,4 +66,10 @@ void Decode::setPC_R(bool pc_f) {
 
 const RegisterFile &Decode::getRegFile() const noexcept {
     return reg_file_;
+}
+
+void Decode::writeToRF(std::bitset<5> A3, std::bitset<32> D3, bool wb_we) {
+    if (wb_we) {
+        reg_file_.Write(A3, D3);
+    }
 }

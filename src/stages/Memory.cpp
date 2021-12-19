@@ -3,13 +3,11 @@
 
 PipelineState Memory::Run(Simulator &cpu) {
     if (!is_set) {
-        return PipelineState::OK;
+        return PipelineState::STALL;
     }
 
-    cpu.MWBtransmitData();
-
+    wb_we_ = we_gen_.WB_WE();
     if (ws_) {
-        wb_we_ = we_gen_.WB_WE();
         if (we_gen_.MEM_WE()) {
             dmem_.Store(D2, alu_out_, lwidth_);
         } else {
@@ -19,6 +17,8 @@ PipelineState Memory::Run(Simulator &cpu) {
         out_data_ = alu_out_;
     }
     cpu.hu_.setHU_MEM_RD_M(wb_a_, wb_we_);
+
+    cpu.MWBtransmitData();
 
     is_set = false;
     return PipelineState::OK;
@@ -30,6 +30,10 @@ std::bitset<32> Memory::ALU_OUT() const noexcept {
 
 bool Memory::WB_WE() const noexcept {
     return wb_we_;
+}
+
+bool Memory::EBREAK() const noexcept {
+    return ebreak_;
 }
 
 std::bitset<5> Memory::WB_A() const noexcept {
@@ -62,4 +66,8 @@ void Memory::setALU_OUT(std::bitset<32> alu_out) {
 
 void Memory::setWB_A(std::bitset<5> wb_a) {
     wb_a_ = wb_a;
+}
+
+void Memory::setEBREAK(bool eb) {
+    ebreak_ = eb;
 }

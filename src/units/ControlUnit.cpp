@@ -1,16 +1,22 @@
 #include "ContolUnit.h"
 
 void ControlUnit::setState(const RISCVInstr &instr) {
+    reset();
     switch (instr.getFormat()) {
         case RISCVInstr::Format::R:
             flags.ALU_SRC2 = true;
+            flags.WB_WE = true;
             SelectALUOp(instr);
             break;
         case RISCVInstr::Format::I:
             if (instr.getOpcode() == Opcode::JALR) {
                 flags.JALR = true;
                 flags.ALU_SRC1 = false;
+            } else if (instr.getOpcode() == Opcode::EBREAK) {
+                flags.EBREAK = true;
+                return;
             }
+            flags.WB_WE = true;
             flags.ALU_SRC2 = false;
             SelectLoadFlags(instr);
             break;
@@ -26,13 +32,19 @@ void ControlUnit::setState(const RISCVInstr &instr) {
             flags.BRANCH_COND = true;
             break;
         case RISCVInstr::Format::U:
+            flags.WB_WE = true;
             flags.ALU_SRC2 = true;
             break;
         case RISCVInstr::Format::J:
+            flags.WB_WE = true;
             flags.ALU_SRC2 = true;
             flags.JMP = true;
             break;
     }
+}
+
+void ControlUnit::reset() {
+    flags = Flags{};
 }
 
 void ControlUnit::SelectALUOp(const RISCVInstr &instr) {

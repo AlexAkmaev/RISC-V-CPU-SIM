@@ -27,18 +27,18 @@ Simulator::Simulator(std::vector<std::bitset<32>> &&imem) {
 PipelineState Simulator::Run() {
     PipelineState state;
     while (true) {
-        ASSERT_STATE(fetch_.Run(*this))
-        ASSERT_STATE(decode_.Run(*this))
-        ASSERT_STATE(execute_.Run(*this))
-        ASSERT_STATE(memory_.Run(*this))
-        ASSERT_STATE(write_back_.Run(*this))
         ASSERT_STATE(hu_.exception_state)
+        ASSERT_STATE(write_back_.Run(*this))
+        ASSERT_STATE(memory_.Run(*this))
+        ASSERT_STATE(execute_.Run(*this))
+        ASSERT_STATE(decode_.Run(*this))
+        ASSERT_STATE(fetch_.Run(*this))
     }
 }
 
 #define CYCLE_CONTROL(prev, next)           \
     ++(prev);                               \
-    if ((prev) - (next) < 2) {              \
+    if ((prev) - (next) < 1) {              \
         return;                             \
     }
 
@@ -69,12 +69,14 @@ void Simulator::EMtransmitData() {
     memory_.setD2(execute_.D2());
     memory_.setALU_OUT(execute_.ALU_OUT());
     memory_.setWB_A(execute_.WB_A());
+    memory_.setEBREAK(execute_.EBREAK());
     memory_.is_set = true;
 }
 
 void Simulator::MWBtransmitData() {
     CYCLE_CONTROL(memory_.cycle, write_back_.cycle)
     write_back_.setWB_WE(memory_.WB_WE());
+    write_back_.setEBREAK(memory_.EBREAK());
     write_back_.setWB_D(memory_.getOutData());
     write_back_.setWB_A(memory_.WB_A());
     write_back_.is_set = true;

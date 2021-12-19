@@ -3,10 +3,8 @@
 
 PipelineState Execute::Run(Simulator &cpu) {
     if (!is_set) {
-        return PipelineState::OK;
+        return PipelineState::STALL;
     }
-
-    cpu.EMtransmitData();
 
     we_gen_ = WE_GEN{CONTROL_EX_.MEM_WE, CONTROL_EX_.WB_WE, v_ex_};
 
@@ -26,6 +24,8 @@ PipelineState Execute::Run(Simulator &cpu) {
             CONTROL_EX_.BRANCH_COND || CONTROL_EX_.JMP || CONTROL_EX_.JALR;
 
     cpu.hu_.CheckForStall(CONTROL_EX_.WS, wb_a_);
+
+    cpu.EMtransmitData();
 
     is_set = false;
     return PipelineState::OK;
@@ -74,6 +74,10 @@ PC Execute::PC_DISP() const noexcept {
 
 bool Execute::JALR() const noexcept {
     return CONTROL_EX_.JALR;
+}
+
+bool Execute::EBREAK() const noexcept {
+    return CONTROL_EX_.EBREAK;
 }
 
 bool Execute::WS() const noexcept {

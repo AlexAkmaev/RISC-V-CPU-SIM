@@ -22,6 +22,7 @@ public:
     void setHU_MEM_RD_WB(std::bitset<5> wb_a, bool wb_we);
     void setA1_A2_D(std::bitset<5> a1, std::bitset<5> a2);
     void setA1_A2_EX(std::bitset<5> a1, std::bitset<5> a2);
+    void sendEndOfIMEM();
 
     PipelineState pl_state{PipelineState::OK};
     PipelineState exception_state{PipelineState::OK};

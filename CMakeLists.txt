@@ -29,7 +29,7 @@ include_directories(${GTEST_INCLUDE_DIRS})
 
 set(SIM_TESTS
     ${SIM_SOURCES}
-    tests/RV32I_tests.cpp
+        tests/RV32I_basics_tests.cpp
 )
 
 # Link runTests with what we want to test and the GTest and pthread library
