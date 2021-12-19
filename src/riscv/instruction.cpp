@@ -151,11 +151,9 @@ void RISCVInstr::SelectII() {
             op_ = Opcode::ANDI;
             break;
         case 0b001:
-            type_ = Format::R;
             op_ = Opcode::SLLI;
             break;
         case 0b101: {
-            type_ = Format::R;
             funct7_ = sub_range<31, 25>(instr_);
             switch (funct7_.to_ulong()) {
                 case 0b0000000:

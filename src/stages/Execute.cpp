@@ -16,7 +16,7 @@ PipelineState Execute::Run(Simulator &cpu) {
     auto RS1V = ChooseRS(cpu.hu_.HU_RS1(cpu), cpu);
     auto RS2V = ChooseRS(cpu.hu_.HU_RS2(cpu), cpu);
 
-    std::bitset<32> alu_src1 = CONTROL_EX_.ALU_SRC1 ? RS1V : std::bitset<32>{PC_EX_.val()};
+    std::bitset<32> alu_src1 = ChooseALU_SRC1(RS1V);
     std::bitset<32> alu_src2 = CONTROL_EX_.ALU_SRC2 ? RS2V : imm_.getImm();
 
     alu_out_ = ALU::calc(alu_src1, alu_src2, CONTROL_EX_.ALU_OP);
@@ -41,6 +41,20 @@ std::bitset<32> Execute::ChooseRS(const HazardUnit::HU_RS &hu_rs, Simulator &cpu
             return cpu.memory_.ALU_OUT();
         case HazardUnit::HU_RS::BP_WB:
             return cpu.write_back_.WB_D();
+    }
+}
+
+std::bitset<32> Execute::ChooseALU_SRC1(std::bitset<32> RS1V) {
+    switch (CONTROL_EX_.ALU_SRC1) {
+        case 0:
+            return RS1V;
+        case 1:
+            return std::bitset<32>{PC_EX_.realVal()};  // PC for jalr and auipc
+        case 2:
+            return {};  // 0 for lui
+        default:
+            std::cerr << "Unknown operand for ALU\n";
+            return {};
     }
 }
 

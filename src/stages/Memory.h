@@ -21,6 +21,10 @@ public:
     void setWB_A(std::bitset<5> wb_a);
     void setEBREAK(bool eb);
 
+    // For testing
+    void storeToDMEM(std::bitset<32> WD, std::bitset<32> A, DMEM::Width w_type = DMEM::Width::WORD);
+    std::bitset<32> loadFromDMEM(std::bitset<32> A, DMEM::Width w_type = DMEM::Width::WORD);
+
     bool is_set{false};
 private:
     /*=== units ===*/

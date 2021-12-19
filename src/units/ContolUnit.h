@@ -8,7 +8,7 @@ public:
     /* True = 1, false = 0 for multiplexer flags */
     struct Flags final {
         bool WB_WE{false};  // reg file write enable
-        bool ALU_SRC1{true};
+        uint8_t ALU_SRC1{0};
         bool ALU_SRC2{true};
         ALU::Op ALU_OP;
         CMP::Op CMP_OP;

@@ -32,6 +32,7 @@ public:
 private:
     [[nodiscard]] std::bitset<32> ChooseRS(
         const HazardUnit::HU_RS &hu_rs, Simulator &cpu) const;  // rs - select D1 or D2
+    [[nodiscard]] std::bitset<32> ChooseALU_SRC1(std::bitset<32> RS1V);
 
     /*=== units ===*/
     //  static ALU

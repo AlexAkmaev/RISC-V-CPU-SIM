@@ -7,12 +7,12 @@ PipelineState Memory::Run(Simulator &cpu) {
     }
 
     wb_we_ = we_gen_.WB_WE();
+    if (we_gen_.MEM_WE()) {
+        dmem_.Store(D2, alu_out_, lwidth_);
+    }
+
     if (ws_) {
-        if (we_gen_.MEM_WE()) {
-            dmem_.Store(D2, alu_out_, lwidth_);
-        } else {
-            out_data_ = dmem_.Load(alu_out_, lwidth_);
-        }
+        out_data_ = dmem_.Load(alu_out_, lwidth_);
     } else {
         out_data_ = alu_out_;
     }
@@ -70,4 +70,12 @@ void Memory::setWB_A(std::bitset<5> wb_a) {
 
 void Memory::setEBREAK(bool eb) {
     ebreak_ = eb;
+}
+
+void Memory::storeToDMEM(std::bitset<32> WD, std::bitset<32> A, DMEM::Width w_type) {
+    dmem_.Store(WD, A, w_type);
+}
+
+std::bitset<32> Memory::loadFromDMEM(std::bitset<32> A, DMEM::Width w_type) {
+    return dmem_.Load(A, w_type);
 }

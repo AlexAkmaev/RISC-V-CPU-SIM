@@ -40,9 +40,9 @@ private:
     std::bitset<5> a2_d_;
     std::bitset<5> a1_ex_;  // execute stage
     std::bitset<5> a2_ex_;
-    bool hu_pc_redirect;
-    bool wb_we_m_{true};
-    bool wb_we_wb_{true};
+    bool hu_pc_redirect{false};
+    bool wb_we_m_{false};
+    bool wb_we_wb_{false};
     std::bitset<5> hu_mem_rd_m_;
     std::bitset<5> hu_mem_rd_wb_;
     /*===============*/

@@ -27,11 +27,20 @@ add_executable(cpu
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS})
 
-set(SIM_TESTS
+set(BaseInstructionsTests
     ${SIM_SOURCES}
-        tests/RV32I_basics_tests.cpp
+    tests/BaseInstructionsTests.cpp
 )
 
+set(HazardUnitTests
+    ${SIM_SOURCES}
+    tests/HazardUnitTests.cpp
+)
+
+
 # Link runTests with what we want to test and the GTest and pthread library
-add_executable(runTests ${SIM_TESTS})
-target_link_libraries(runTests ${GTEST_LIBRARIES} pthread)
+add_executable(BaseInstructionsTests ${BaseInstructionsTests})
+target_link_libraries(BaseInstructionsTests ${GTEST_LIBRARIES} pthread)
+
+add_executable(HazardUnitTests ${HazardUnitTests})
+target_link_libraries(HazardUnitTests ${GTEST_LIBRARIES} pthread)
