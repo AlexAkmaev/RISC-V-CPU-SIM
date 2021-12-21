@@ -4,7 +4,7 @@ void ControlUnit::setState(const RISCVInstr &instr) {
     reset();
     switch (instr.getFormat()) {
         case RISCVInstr::Format::R:
-            flags.ALU_SRC2 = true;
+            flags.ALU_SRC2 = 0;
             flags.WB_WE = true;
             SelectALUOp(instr);
             break;
@@ -17,18 +17,18 @@ void ControlUnit::setState(const RISCVInstr &instr) {
                 return;
             }
             flags.WB_WE = true;
-            flags.ALU_SRC2 = false;
+            flags.ALU_SRC2 = 1;
             SelectALUOp(instr);
             SelectLoadFlags(instr);
             break;
         case RISCVInstr::Format::S:
             flags.WB_WE = false;
-            flags.ALU_SRC2 = false;
+            flags.ALU_SRC2 = 1;
             flags.MEM_WE = true;
             break;
         case RISCVInstr::Format::B:
             flags.WB_WE = false;
-            flags.ALU_SRC2 = true;
+            flags.ALU_SRC2 = 0;
             SelectCMPOp(instr);
             flags.BRANCH_COND = true;
             break;
@@ -40,11 +40,12 @@ void ControlUnit::setState(const RISCVInstr &instr) {
                 flags.ALU_SRC1 = 1;  // PC
             }
             flags.WB_WE = true;
-            flags.ALU_SRC2 = false;
+            flags.ALU_SRC2 = 1;
             break;
         case RISCVInstr::Format::J:
             flags.WB_WE = true;
-            flags.ALU_SRC2 = true;
+            flags.ALU_SRC1 = 1;
+            flags.ALU_SRC2 = 2;
             flags.JMP = true;
             break;
     }

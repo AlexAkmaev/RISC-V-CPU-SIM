@@ -14,14 +14,19 @@ public:
 
     [[nodiscard]] HU_RS HU_RS1(Simulator &cpu) noexcept;
     [[nodiscard]] HU_RS HU_RS2(Simulator &cpu) noexcept;
+    std::bitset<32> BP_MEM() const noexcept;
+    std::bitset<32> BP_WB() const noexcept;
     bool CheckForStall(bool ws_ex, std::bitset<5> rd) noexcept;
     [[nodiscard]] bool FD_EN() const noexcept;
     [[nodiscard]] bool PC_EN() const noexcept;
 
+    void setBP_MEM(std::bitset<32> wb_d);
+    void setBP_WB(std::bitset<32> wb_d);
     void setHU_MEM_RD_M(std::bitset<5> wb_a, bool wb_we);
     void setHU_MEM_RD_WB(std::bitset<5> wb_a, bool wb_we);
     void setA1_A2_D(std::bitset<5> a1, std::bitset<5> a2);
     void setA1_A2_EX(std::bitset<5> a1, std::bitset<5> a2);
+    void setHU_PC_REDIECT(bool pc_r);
     void sendEndOfIMEM();
 
     PipelineState pl_state{PipelineState::OK};
@@ -40,7 +45,9 @@ private:
     std::bitset<5> a2_d_;
     std::bitset<5> a1_ex_;  // execute stage
     std::bitset<5> a2_ex_;
-    bool hu_pc_redirect{false};
+    bool hu_pc_redirect_{false};
+    std::bitset<32> bp_mem_;
+    std::bitset<32> bp_wb_;
     bool wb_we_m_{false};
     bool wb_we_wb_{false};
     std::bitset<5> hu_mem_rd_m_;

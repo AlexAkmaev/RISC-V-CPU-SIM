@@ -6,7 +6,7 @@ PipelineState Execute::Run(Simulator &cpu) {
         return PipelineState::STALL;
     }
 
-    we_gen_ = WE_GEN{CONTROL_EX_.MEM_WE, CONTROL_EX_.WB_WE, v_ex_};
+    we_gen_ = WE_GEN{CONTROL_EX_.MEM_WE, CONTROL_EX_.WB_WE, CONTROL_EX_.EBREAK, v_ex_};
 
     wb_a_ = instr_.getRd();
     imm_ = IMM{instr_, CONTROL_EX_.JALR};
@@ -17,11 +17,19 @@ PipelineState Execute::Run(Simulator &cpu) {
     auto RS2V = ChooseRS(cpu.hu_.HU_RS2(cpu), cpu);
 
     std::bitset<32> alu_src1 = ChooseALU_SRC1(RS1V);
-    std::bitset<32> alu_src2 = CONTROL_EX_.ALU_SRC2 ? RS2V : imm_.getImm();
+    std::bitset<32> alu_src2 = ChooseALU_SRC2(RS2V);
 
     alu_out_ = ALU::calc(alu_src1, alu_src2, CONTROL_EX_.ALU_OP);
     PC_R_ = CMP::calc(RS1V, RS2V, CONTROL_EX_.CMP_OP) &&
-            CONTROL_EX_.BRANCH_COND || CONTROL_EX_.JMP || CONTROL_EX_.JALR;
+            CONTROL_EX_.BRANCH_COND || CONTROL_EX_.JMP && v_ex_ || CONTROL_EX_.JALR && v_ex_;
+    cpu.hu_.setHU_PC_REDIECT(PC_R_);
+
+    cpu.decode_.setPC_R(PC_R_);
+    cpu.fetch_.setJALR(CONTROL_EX_.JALR);
+    cpu.fetch_.setPC_R(PC_R_);
+    cpu.fetch_.setD1(d1_);
+    cpu.fetch_.setPC_EX(PC_EX_);
+    cpu.fetch_.setPC_DISP(PC_DISP_);
 
     cpu.hu_.CheckForStall(CONTROL_EX_.WS, wb_a_);
 
@@ -38,9 +46,9 @@ std::bitset<32> Execute::ChooseRS(const HazardUnit::HU_RS &hu_rs, Simulator &cpu
         case HazardUnit::HU_RS::D2:
             return d2_;
         case HazardUnit::HU_RS::BP_MEM:
-            return cpu.memory_.ALU_OUT();
+            return cpu.hu_.BP_MEM();
         case HazardUnit::HU_RS::BP_WB:
-            return cpu.write_back_.WB_D();
+            return cpu.hu_.BP_WB();
     }
 }
 
@@ -49,9 +57,23 @@ std::bitset<32> Execute::ChooseALU_SRC1(std::bitset<32> RS1V) {
         case 0:
             return RS1V;
         case 1:
-            return std::bitset<32>{PC_EX_.realVal()};  // PC for jalr and auipc
+            return std::bitset<32>{PC_EX_.realVal()};  // PC for jal, jalr and auipc
         case 2:
             return {};  // 0 for lui
+        default:
+            std::cerr << "Unknown operand for ALU\n";
+            return {};
+    }
+}
+
+std::bitset<32> Execute::ChooseALU_SRC2(std::bitset<32> RS2V) {
+    switch (CONTROL_EX_.ALU_SRC2) {
+        case 0:
+            return RS2V;
+        case 1:
+            return imm_.getImm();
+        case 2:
+            return std::bitset<32>{4};  // PC + 4 for jal
         default:
             std::cerr << "Unknown operand for ALU\n";
             return {};
@@ -88,10 +110,6 @@ PC Execute::PC_DISP() const noexcept {
 
 bool Execute::JALR() const noexcept {
     return CONTROL_EX_.JALR;
-}
-
-bool Execute::EBREAK() const noexcept {
-    return CONTROL_EX_.EBREAK;
 }
 
 bool Execute::WS() const noexcept {

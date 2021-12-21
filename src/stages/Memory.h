@@ -19,7 +19,6 @@ public:
     void setLWidth(DMEM::Width lwidth);
     void setALU_OUT(std::bitset<32> alu_out);
     void setWB_A(std::bitset<5> wb_a);
-    void setEBREAK(bool eb);
 
     // For testing
     void storeToDMEM(std::bitset<32> WD, std::bitset<32> A, DMEM::Width w_type = DMEM::Width::WORD);

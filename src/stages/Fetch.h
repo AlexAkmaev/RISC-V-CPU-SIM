@@ -16,6 +16,11 @@ public:
     [[nodiscard]] PC getNextPC() const noexcept;
     [[nodiscard]] bool PC_R() const noexcept;
 
+    void setPC_R(bool pc_r) noexcept;
+    void setJALR(bool jalr) noexcept;
+    void setD1(std::bitset<32> d1) noexcept;
+    void setPC_EX(PC pc_ex) noexcept;
+    void setPC_DISP(PC pc_disp) noexcept;
     void setIMEM(IMEM &&imem) noexcept;
     void applyPC() noexcept;
 
@@ -26,14 +31,17 @@ private:
     /*=============*/
 
     /*=== inputs ===*/
-    //  JALR
-    //  rs1
+    bool pc_r_{false};
+    bool jalr_{false};
+    std::bitset<32> d1_;
+    PC pc_ex_;
+    PC pc_disp_;
     /*==============*/
 
     /*=== outputs ===*/
     RISCVInstr instr_;
     PC pc_next_{0};
-    bool pc_r_{false};
+    // pc_r
     /*===============*/
 
     /*=== fallthrough ===*/

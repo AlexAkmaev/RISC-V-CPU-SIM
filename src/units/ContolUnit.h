@@ -9,7 +9,7 @@ public:
     struct Flags final {
         bool WB_WE{false};  // reg file write enable
         uint8_t ALU_SRC1{0};
-        bool ALU_SRC2{true};
+        uint8_t ALU_SRC2{0};
         ALU::Op ALU_OP;
         CMP::Op CMP_OP;
         bool MEM_WE{false};

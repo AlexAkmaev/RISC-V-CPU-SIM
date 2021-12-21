@@ -20,7 +20,8 @@ public:
 
     void setInstr(const RISCVInstr &instr);
     void setPC(const PC &pc);
-    void setPC_R(bool pc_f);
+    void setPC_R_F(bool pc_f);
+    void setPC_R(bool pc_r);
     void writeToRF(std::bitset<5> A3, std::bitset<32> D3, bool wb_we);
 
     // for tests
@@ -35,6 +36,7 @@ private:
 
     /*=== inputs ===*/
     bool pc_f_{false};
+    bool pc_r_{false};
     RISCVInstr instr_;
     /*==============*/
 

@@ -11,6 +11,7 @@ PipelineState WriteBack::Run(Simulator &cpu) {
     }
 
     cpu.hu_.setHU_MEM_RD_WB(wb_a_, wb_we_);
+    cpu.hu_.setBP_WB(wb_d_);
     cpu.decode_.writeToRF(wb_a_, wb_d_, wb_we_);
 
     is_set = false;

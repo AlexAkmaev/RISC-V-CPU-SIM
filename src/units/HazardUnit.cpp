@@ -27,6 +27,14 @@ HazardUnit::HU_RS HazardUnit::HU_RS2(Simulator &cpu) noexcept {
     return HU_RS::D2;
 }
 
+std::bitset<32> HazardUnit::BP_MEM() const noexcept {
+    return bp_mem_;
+}
+
+std::bitset<32> HazardUnit::BP_WB() const noexcept {
+    return bp_wb_;
+}
+
 bool HazardUnit::CheckForStall(bool ws_ex, std::bitset<5> rd) noexcept {
     if (ws_ex && (rd == a1_d_ || rd == a2_d_)) {
         pc_en_ = false;
@@ -58,9 +66,14 @@ void HazardUnit::setHU_MEM_RD_M(std::bitset<5> wb_a, bool wb_we) {
 void HazardUnit::setHU_MEM_RD_WB(std::bitset<5> wb_a, bool wb_we) {
     hu_mem_rd_wb_ = wb_a;
     wb_we_wb_ = wb_we;
-    if (wb_we && wb_a == std::bitset<5>{/* x0 */ 0}) {
-        exception_state = PipelineState::BREAK;
-    }
+}
+
+void HazardUnit::setBP_MEM(std::bitset<32> wb_d) {
+    bp_mem_ = wb_d;
+}
+
+void HazardUnit::setBP_WB(std::bitset<32> wb_d) {
+    bp_wb_ = wb_d;
 }
 
 void HazardUnit::setA1_A2_D(std::bitset<5> a1, std::bitset<5> a2) {
@@ -74,5 +87,9 @@ void HazardUnit::setA1_A2_EX(std::bitset<5> a1, std::bitset<5> a2) {
 }
 
 void HazardUnit::sendEndOfIMEM() {
-    pc_en_ = false;
+    pc_en_ = false || hu_pc_redirect_;
+}
+
+void HazardUnit::setHU_PC_REDIECT(bool pc_r) {
+    hu_pc_redirect_ = pc_r;
 }

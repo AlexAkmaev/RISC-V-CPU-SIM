@@ -72,26 +72,26 @@ struct PC final {
 
     PC operator+(uint32_t offset) const noexcept {
         assert(offset % 4 == 0);
-        uint32_t res_pc = pc_ + offset / 4;
+        uint32_t res_pc = pc_ + static_cast<int32_t>(offset) / 4;
         assert(res_pc >= 0);
         return PC{res_pc};
     }
 
     PC operator+(PC rhs) const noexcept {
-        uint32_t res_pc = pc_ + rhs.val() / 4;
+        uint32_t res_pc = pc_ + static_cast<int32_t>(rhs.val()) / 4;
         assert(res_pc >= 0);
         return PC{res_pc};
     }
 
     PC &operator+=(uint32_t offset) noexcept {
         assert(offset % 4 == 0);
-        pc_ += offset / 4;
+        pc_ += static_cast<int32_t>(offset) / 4;
         assert(pc_ >= 0);
         return *this;
     }
 
     PC &operator+=(std::bitset<32> offset) noexcept {
-        pc_ += offset.to_ulong() / 4;
+        pc_ += static_cast<int32_t>(offset.to_ulong()) / 4;
         assert(pc_ >= 0);
         return *this;
     }
@@ -308,7 +308,8 @@ public:
 class WE_GEN final {
 public:
     WE_GEN() = default;
-    explicit WE_GEN(bool mem_we, bool wb_we, bool v_ex) : mem_we_(mem_we && v_ex), wb_we_(wb_we && v_ex) {}
+    explicit WE_GEN(bool mem_we, bool wb_we, bool ebreak, bool v_ex) :
+             mem_we_(mem_we && v_ex), wb_we_(wb_we && v_ex), ebreak_(ebreak && v_ex) {}
 
     [[nodiscard]] bool MEM_WE() const noexcept {
         return mem_we_;
@@ -318,9 +319,14 @@ public:
         return wb_we_;
     }
 
+    [[nodiscard]] bool EBREAK() const noexcept {
+        return ebreak_;
+    }
+
 private:
     bool mem_we_{false};
     bool wb_we_{false};
+    bool ebreak_{false};
 };
 
 /*======== Memory units ===========*/

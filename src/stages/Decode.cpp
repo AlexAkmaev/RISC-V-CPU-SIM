@@ -12,7 +12,7 @@ PipelineState Decode::Run(Simulator &cpu) {
     D1 = reg_file_.Read(instr_.getRs1());
     D2 = reg_file_.Read(instr_.getRs2());
 
-    v_de_ = !(pc_f_ || cpu.execute_.PC_R() || cpu.hu_.pl_state == PipelineState::STALL);
+    v_de_ = !(pc_f_ || pc_r_ || cpu.hu_.pl_state == PipelineState::STALL);
 
     cpu.DEtransmitData();
 
@@ -60,8 +60,12 @@ void Decode::setPC(const PC &pc) {
     pc_ = pc;
 }
 
-void Decode::setPC_R(bool pc_f) {
+void Decode::setPC_R_F(bool pc_f) {
     pc_f_ = pc_f;
+}
+
+void Decode::setPC_R(bool pc_r) {
+    pc_r_ = pc_r;
 }
 
 const RegisterFile &Decode::getRegFile() const noexcept {

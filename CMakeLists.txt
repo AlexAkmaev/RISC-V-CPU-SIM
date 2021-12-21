@@ -3,7 +3,6 @@ project(simulator)
 
 set(CMAKE_CXX_STANDARD 20)
 
-
 set(SIM_SOURCES
     src/simulator.cpp
     src/stages/Fetch.cpp
@@ -32,15 +31,22 @@ set(BaseInstructionsTests
     tests/BaseInstructionsTests.cpp
 )
 
+set(BlocksTests
+    ${SIM_SOURCES}
+    tests/BlocksTests.cpp
+)
+
 set(HazardUnitTests
     ${SIM_SOURCES}
     tests/HazardUnitTests.cpp
 )
 
-
 # Link runTests with what we want to test and the GTest and pthread library
 add_executable(BaseInstructionsTests ${BaseInstructionsTests})
 target_link_libraries(BaseInstructionsTests ${GTEST_LIBRARIES} pthread)
+
+add_executable(BlocksTests ${BlocksTests})
+target_link_libraries(BlocksTests ${GTEST_LIBRARIES} pthread)
 
 add_executable(HazardUnitTests ${HazardUnitTests})
 target_link_libraries(HazardUnitTests ${GTEST_LIBRARIES} pthread)

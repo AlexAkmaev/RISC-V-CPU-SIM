@@ -46,7 +46,7 @@ void Simulator::FDtransmitData() {
     CYCLE_CONTROL(fetch_.cycle, decode_.cycle)
     decode_.setInstr(fetch_.getInstr());
     decode_.setPC(fetch_.getPC());
-    decode_.setPC_R(fetch_.PC_R());
+    decode_.setPC_R_F(fetch_.PC_R());
     fetch_.applyPC();
     decode_.is_set = true;
 }
@@ -69,7 +69,6 @@ void Simulator::EMtransmitData() {
     memory_.setD2(execute_.D2());
     memory_.setALU_OUT(execute_.ALU_OUT());
     memory_.setWB_A(execute_.WB_A());
-    memory_.setEBREAK(execute_.EBREAK());
     memory_.is_set = true;
 }
 
