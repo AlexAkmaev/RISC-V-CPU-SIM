@@ -165,6 +165,33 @@ TEST(BlocksTest, Jumps) {
     ASSERT_EQ(cpu.decode_.getRegFile().Read({/* a0 */ 10}), std::bitset<32>{/* 41 */ 0x00000029});
 }
 
+TEST(BlocksTest, Jalr) {
+    /*
+        li t0, 5
+        li t1, 20
+        jalr t1
+        add a0, t1, t0
+        addi a0, a0, -2
+        addi a1, a0, 10
+    */
+
+    std::vector<std::bitset<32>> imem = {
+        0x00500293,
+        0x01400313,
+        0x000300e7,
+        0x00530533,
+        0xffe50513,
+        0x00a50593
+    };
+
+    Simulator cpu = Simulator{std::move(imem)};
+    ASSERT_NE(cpu.Run(), PipelineState::ERR);
+    ASSERT_EQ(cpu.decode_.getRegFile().Read({/* t0 */ 5}), std::bitset<32>{/* 5 */ 0x00000005});
+    ASSERT_EQ(cpu.decode_.getRegFile().Read({/* t1 */ 6}), std::bitset<32>{/* 20 */ 0x00000014});
+    ASSERT_EQ(cpu.decode_.getRegFile().Read({/* a0 */ 10}), std::bitset<32>{/* 0 */ 0x00000000});
+    ASSERT_EQ(cpu.decode_.getRegFile().Read({/* a1 */ 11}), std::bitset<32>{/* 10 */ 0x0000000a});
+}
+
 TEST(BlocksTest, Loop1) {
     /*
         li t0, 0

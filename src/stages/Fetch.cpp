@@ -17,7 +17,7 @@ PipelineState Fetch::Run(Simulator &cpu) {
         if (!pc_r_) {
             pc_next_ += 4;
         } else {
-            pc_next_ = (jalr_ ? PC{d1_} : pc_ex_) + pc_disp_;
+            pc_next_ = (jalr_ ? PC{static_cast<uint32_t>(d1_.to_ulong()) / 4 - 1} : pc_ex_) + pc_disp_;
         }
     }
 

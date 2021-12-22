@@ -15,6 +15,7 @@ PipelineState Execute::Run(Simulator &cpu) {
     cpu.hu_.setA1_A2_EX(instr_.getRs1(), instr_.getRs2());
     auto RS1V = ChooseRS(cpu.hu_.HU_RS1(cpu), cpu);
     auto RS2V = ChooseRS(cpu.hu_.HU_RS2(cpu), cpu);
+    cpu.fetch_.setD1(RS1V);
     rs2v_ = RS2V;
 
     std::bitset<32> alu_src1 = ChooseALU_SRC1(RS1V);
@@ -26,11 +27,10 @@ PipelineState Execute::Run(Simulator &cpu) {
     cpu.hu_.setHU_PC_REDIECT(PC_R_);
 
     cpu.decode_.setPC_R(PC_R_);
-    cpu.fetch_.setJALR(CONTROL_EX_.JALR);
     cpu.fetch_.setPC_R(PC_R_);
-    cpu.fetch_.setD1(d1_);
     cpu.fetch_.setPC_EX(PC_EX_);
     cpu.fetch_.setPC_DISP(PC_DISP_);
+    cpu.fetch_.setJALR(CONTROL_EX_.JALR);
 
     cpu.hu_.CheckForStall(CONTROL_EX_.WS, wb_a_, cpu);
 
