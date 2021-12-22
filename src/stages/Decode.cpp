@@ -7,7 +7,6 @@ PipelineState Decode::Run(Simulator &cpu) {
     }
 
     cu_.setState(instr_);
-    cpu.hu_.setA1_A2_D(instr_.getRs1(), instr_.getRs2());
 
     D1 = reg_file_.Read(instr_.getRs1());
     D2 = reg_file_.Read(instr_.getRs2());

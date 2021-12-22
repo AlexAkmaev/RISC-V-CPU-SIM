@@ -2,6 +2,10 @@
 #include "simulator.h"
 
 HazardUnit::HU_RS HazardUnit::HU_RS1(Simulator &cpu) noexcept {
+    if (bp_rd_rs1_) {
+        return HU_RS::BP_RD;
+    }
+
     if (wb_we_m_ && a1_ex_ == hu_mem_rd_m_) {
         return HU_RS::BP_MEM;
     }
@@ -15,6 +19,10 @@ HazardUnit::HU_RS HazardUnit::HU_RS1(Simulator &cpu) noexcept {
 }
 
 HazardUnit::HU_RS HazardUnit::HU_RS2(Simulator &cpu) noexcept {
+    if (bp_rd_rs2_) {
+        return HU_RS::BP_RD;
+    }
+
     if (wb_we_m_ && a2_ex_ == hu_mem_rd_m_) {
         return HU_RS::BP_MEM;
     }
@@ -35,14 +43,20 @@ std::bitset<32> HazardUnit::BP_WB() const noexcept {
     return bp_wb_;
 }
 
-bool HazardUnit::CheckForStall(bool ws_ex, std::bitset<5> rd) noexcept {
-    if (ws_ex && (rd == a1_d_ || rd == a2_d_)) {
+std::bitset<32> HazardUnit::BP_RD() const noexcept {
+    return bp_rd_;
+}
+
+bool HazardUnit::CheckForStall(bool ws_ex, std::bitset<5> rd, Simulator &cpu) noexcept {
+    if (ws_ex && (bp_rd_rs1_ = rd == cpu.decode_.getInstr().getRs1() || (bp_rd_rs2_ = rd == cpu.decode_.getInstr().getRs2()))) {
         pc_en_ = false;
         fd_en_ = false;
         pl_state = PipelineState::STALL;
         return true;
     }
 
+    bp_rd_rs1_ = false;
+    bp_rd_rs2_ = false;
     pc_en_ = true;
     fd_en_ = true;
     pl_state = PipelineState::OK;
@@ -76,9 +90,8 @@ void HazardUnit::setBP_WB(std::bitset<32> wb_d) {
     bp_wb_ = wb_d;
 }
 
-void HazardUnit::setA1_A2_D(std::bitset<5> a1, std::bitset<5> a2) {
-    a1_d_ = a1;
-    a2_d_ = a2;
+void HazardUnit::setBP_RD(std::bitset<32> rd_mem) {
+    bp_rd_ = rd_mem;
 }
 
 void HazardUnit::setA1_A2_EX(std::bitset<5> a1, std::bitset<5> a2) {
@@ -87,7 +100,7 @@ void HazardUnit::setA1_A2_EX(std::bitset<5> a1, std::bitset<5> a2) {
 }
 
 void HazardUnit::sendEndOfIMEM() {
-    pc_en_ = false || hu_pc_redirect_;
+    pc_en_ = hu_pc_redirect_;
 }
 
 void HazardUnit::setHU_PC_REDIECT(bool pc_r) {

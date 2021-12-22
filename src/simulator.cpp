@@ -66,7 +66,7 @@ void Simulator::EMtransmitData() {
     memory_.setWE_GEN(execute_.getWE_GEN());
     memory_.setWS(execute_.WS());
     memory_.setLWidth(execute_.MEM_WIDTH());
-    memory_.setD2(execute_.D2());
+    memory_.setD2(execute_.RS2V());
     memory_.setALU_OUT(execute_.ALU_OUT());
     memory_.setWB_A(execute_.WB_A());
     memory_.is_set = true;

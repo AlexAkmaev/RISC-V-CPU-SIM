@@ -12,7 +12,7 @@ public:
     [[nodiscard]] WE_GEN getWE_GEN() const noexcept;
     [[nodiscard]] std::bitset<32> ALU_OUT() const noexcept;
     [[nodiscard]] std::bitset<32> D1() const noexcept;
-    [[nodiscard]] std::bitset<32> D2() const noexcept;
+    [[nodiscard]] std::bitset<32> RS2V() const noexcept;
     [[nodiscard]] bool PC_R() const noexcept;
     [[nodiscard]] PC PC_EX() const noexcept;
     [[nodiscard]] PC PC_DISP() const noexcept;
@@ -58,7 +58,7 @@ private:
     /*=== fallthrough ===*/
     ControlUnit::Flags CONTROL_EX_;
     std::bitset<5> wb_a_;
-    // D2
+    std::bitset<32> rs2v_;
     /*===================*/
 };
 

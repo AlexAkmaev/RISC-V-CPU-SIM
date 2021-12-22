@@ -15,6 +15,7 @@ PipelineState Execute::Run(Simulator &cpu) {
     cpu.hu_.setA1_A2_EX(instr_.getRs1(), instr_.getRs2());
     auto RS1V = ChooseRS(cpu.hu_.HU_RS1(cpu), cpu);
     auto RS2V = ChooseRS(cpu.hu_.HU_RS2(cpu), cpu);
+    rs2v_ = RS2V;
 
     std::bitset<32> alu_src1 = ChooseALU_SRC1(RS1V);
     std::bitset<32> alu_src2 = ChooseALU_SRC2(RS2V);
@@ -31,7 +32,7 @@ PipelineState Execute::Run(Simulator &cpu) {
     cpu.fetch_.setPC_EX(PC_EX_);
     cpu.fetch_.setPC_DISP(PC_DISP_);
 
-    cpu.hu_.CheckForStall(CONTROL_EX_.WS, wb_a_);
+    cpu.hu_.CheckForStall(CONTROL_EX_.WS, wb_a_, cpu);
 
     cpu.EMtransmitData();
 
@@ -42,13 +43,15 @@ PipelineState Execute::Run(Simulator &cpu) {
 std::bitset<32> Execute::ChooseRS(const HazardUnit::HU_RS &hu_rs, Simulator &cpu) const {
     switch (hu_rs) {
         case HazardUnit::HU_RS::D1:
-            return d1_;
+            return {d1_};
         case HazardUnit::HU_RS::D2:
-            return d2_;
+            return {d2_};
         case HazardUnit::HU_RS::BP_MEM:
             return cpu.hu_.BP_MEM();
         case HazardUnit::HU_RS::BP_WB:
             return cpu.hu_.BP_WB();
+        case HazardUnit::HU_RS::BP_RD:
+            return cpu.hu_.BP_RD();
     }
 }
 
@@ -92,8 +95,8 @@ std::bitset<32> Execute::D1() const noexcept {
     return d1_;
 }
 
-std::bitset<32> Execute::D2() const noexcept {
-    return d2_;
+std::bitset<32> Execute::RS2V() const noexcept {
+    return rs2v_;
 }
 
 bool Execute::PC_R() const noexcept {

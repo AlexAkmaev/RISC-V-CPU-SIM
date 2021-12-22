@@ -23,6 +23,8 @@ PipelineState Fetch::Run(Simulator &cpu) {
 
     // Prohibit data transmission through the register while stall
     if (!cpu.hu_.FD_EN()) {
+        cpu.decode_.is_set = true;
+        ++cycle;
         return PipelineState::STALL;
     }
 
