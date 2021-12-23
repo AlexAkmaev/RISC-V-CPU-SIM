@@ -2,15 +2,11 @@
 #include "simulator.h"
 
 HazardUnit::HU_RS HazardUnit::HU_RS1(Simulator &cpu) noexcept {
-    if (bp_rd_rs1_) {
-        return HU_RS::BP_RD;
-    }
-
     if (wb_we_m_ && a1_ex_ == hu_mem_rd_m_) {
         return HU_RS::BP_MEM;
     }
 
-    if (wb_we_wb_ && (a1_ex_ == hu_mem_rd_wb_ || pl_state == PipelineState::STALL)) {
+    if (wb_we_wb_ && (a1_ex_ == hu_mem_rd_wb_) || bp_rd_rs1_) {
         pl_state = PipelineState::OK;
         return HU_RS::BP_WB;
     }
@@ -19,15 +15,11 @@ HazardUnit::HU_RS HazardUnit::HU_RS1(Simulator &cpu) noexcept {
 }
 
 HazardUnit::HU_RS HazardUnit::HU_RS2(Simulator &cpu) noexcept {
-    if (bp_rd_rs2_) {
-        return HU_RS::BP_RD;
-    }
-
     if (wb_we_m_ && a2_ex_ == hu_mem_rd_m_) {
         return HU_RS::BP_MEM;
     }
 
-    if (wb_we_wb_ && (a2_ex_ == hu_mem_rd_wb_ || pl_state == PipelineState::STALL)) {
+    if (wb_we_wb_ && (a2_ex_ == hu_mem_rd_wb_) || bp_rd_rs2_) {
         pl_state = PipelineState::OK;
         return HU_RS::BP_WB;
     }
@@ -88,10 +80,6 @@ void HazardUnit::setBP_MEM(std::bitset<32> wb_d) {
 
 void HazardUnit::setBP_WB(std::bitset<32> wb_d) {
     bp_wb_ = wb_d;
-}
-
-void HazardUnit::setBP_RD(std::bitset<32> rd_mem) {
-    bp_rd_ = rd_mem;
 }
 
 void HazardUnit::setA1_A2_EX(std::bitset<5> a1, std::bitset<5> a2) {

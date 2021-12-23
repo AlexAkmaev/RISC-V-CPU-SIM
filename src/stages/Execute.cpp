@@ -22,8 +22,8 @@ PipelineState Execute::Run(Simulator &cpu) {
     std::bitset<32> alu_src2 = ChooseALU_SRC2(RS2V);
 
     alu_out_ = ALU::calc(alu_src1, alu_src2, CONTROL_EX_.ALU_OP);
-    PC_R_ = CMP::calc(RS1V, RS2V, CONTROL_EX_.CMP_OP) &&
-            CONTROL_EX_.BRANCH_COND || CONTROL_EX_.JMP && v_ex_ || CONTROL_EX_.JALR && v_ex_;
+    PC_R_ = (CMP::calc(RS1V, RS2V, CONTROL_EX_.CMP_OP) &&
+            CONTROL_EX_.BRANCH_COND || CONTROL_EX_.JMP || CONTROL_EX_.JALR) && v_ex_;
     cpu.hu_.setHU_PC_REDIECT(PC_R_);
 
     cpu.decode_.setPC_R(PC_R_);
@@ -50,8 +50,6 @@ std::bitset<32> Execute::ChooseRS(const HazardUnit::HU_RS &hu_rs, Simulator &cpu
             return cpu.hu_.BP_MEM();
         case HazardUnit::HU_RS::BP_WB:
             return cpu.hu_.BP_WB();
-        case HazardUnit::HU_RS::BP_RD:
-            return cpu.hu_.BP_RD();
     }
 }
 

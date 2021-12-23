@@ -14,7 +14,6 @@ PipelineState Memory::Run(Simulator &cpu) {
 
     if (ws_) {
         out_data_ = dmem_.Load(alu_out_, lwidth_);
-        cpu.hu_.setBP_RD(out_data_);
     } else {
         out_data_ = alu_out_;
     }

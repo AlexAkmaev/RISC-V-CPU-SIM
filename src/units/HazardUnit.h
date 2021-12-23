@@ -9,8 +9,7 @@ public:
         D1,
         D2,
         BP_MEM,
-        BP_WB,
-        BP_RD
+        BP_WB
     };
 
     [[nodiscard]] HU_RS HU_RS1(Simulator &cpu) noexcept;
@@ -24,7 +23,6 @@ public:
 
     void setBP_MEM(std::bitset<32> wb_d);
     void setBP_WB(std::bitset<32> wb_d);
-    void setBP_RD(std::bitset<32> rd_mem);
     void setHU_MEM_RD_M(std::bitset<5> wb_a, bool wb_we);
     void setHU_MEM_RD_WB(std::bitset<5> wb_a, bool wb_we);
     void setA1_A2_EX(std::bitset<5> a1, std::bitset<5> a2);
