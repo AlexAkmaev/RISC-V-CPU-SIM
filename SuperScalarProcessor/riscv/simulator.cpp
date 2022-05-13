@@ -1,4 +1,5 @@
 #include "simulator.h"
+#include "macros.h"
 
 Simulator::Simulator(uint32_t instr_count) {
     fetch_ = Fetch{instr_count};
@@ -16,14 +17,6 @@ Simulator::Simulator(std::vector<std::bitset<32>> &&imem) {
     write_back_ = WriteBack{};
 }
 
-#define ASSERT_STATE(Run)                           \
-    state = (Run);                                  \
-    if (state == PipelineState::ERR) {              \
-        return PipelineState::ERR;                  \
-    } else if (state == PipelineState::BREAK) {     \
-        return PipelineState::OK;                   \
-    }
-
 PipelineState Simulator::Run() {
     PipelineState state;
     while (true) {
@@ -35,12 +28,6 @@ PipelineState Simulator::Run() {
         ASSERT_STATE(fetch_.Run(*this))
     }
 }
-
-#define CYCLE_CONTROL(prev, next)           \
-    ++(prev);                               \
-    if ((prev) - (next) < 1) {              \
-        return;                             \
-    }
 
 void Simulator::FDtransmitData() {
     CYCLE_CONTROL(fetch_.cycle, decode_.cycle)

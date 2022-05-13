@@ -11,7 +11,9 @@ int main(int argc, char *argv[]) {
     std::ifstream file((std::string(argv[1])));
     std::string ins_bits;
     while (std::getline(file, ins_bits)) {
-        imem.pushBackInstr(std::bitset<32>{ins_bits});
+        if (!ins_bits.empty()) {
+            imem.pushBackInstr(std::bitset<32>{std::stoul(ins_bits, nullptr, 16)});
+        }
     }
 
     Simulator cpu = Simulator{imem.getRawImem()};

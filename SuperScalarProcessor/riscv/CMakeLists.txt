@@ -6,5 +6,8 @@ set(RISCV_SOURCES
 )
 
 add_library(riscv ${RISCV_SOURCES})
-target_include_directories(riscv PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(riscv
+    PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+    PUBLIC ${PROJECT_SOURCE_DIR}/common
+)
 target_link_libraries(riscv units stages)
