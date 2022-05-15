@@ -15,7 +15,12 @@ PipelineState Fetch::Run(Simulator &cpu) {
     }
 
     if (cpu.hu_.PC_EN()) {
-        if (!pc_r_) {
+        bool prediction = cpu.hu_.getPredicton(pc_);
+        if (cpu.execute_.isRestore()) {
+            pc_next_ = pc_ex_ + 4;
+        } else if (prediction) {
+            pc_next_ = cpu.hu_.getTarget(prediction, pc_);
+        } else if (!pc_r_) {
             pc_next_ += 4;
         } else {
             pc_next_ = (jalr_ ? PC{static_cast<uint32_t>(d1_.to_ulong()) / 4 - 1} : pc_ex_) + pc_disp_;

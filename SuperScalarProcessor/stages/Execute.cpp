@@ -22,9 +22,24 @@ PipelineState Execute::Run(Simulator &cpu) {
     std::bitset<32> alu_src2 = ChooseALU_SRC2(RS2V);
 
     alu_out_ = ALU::calc(alu_src1, alu_src2, CONTROL_EX_.ALU_OP);
-    PC_R_ = ((CMP::calc(RS1V, RS2V, CONTROL_EX_.CMP_OP) &&
-            CONTROL_EX_.BRANCH_COND) || CONTROL_EX_.JMP || CONTROL_EX_.JALR) && v_ex_;
+    bool comp = CMP::calc(RS1V, RS2V, CONTROL_EX_.CMP_OP);
+    PC_R_ = ((comp && CONTROL_EX_.BRANCH_COND) || CONTROL_EX_.JMP || CONTROL_EX_.JALR) && v_ex_;
     cpu.hu_.setHU_PC_REDIECT(PC_R_);
+
+    // if the instr can transfer control
+    if (CONTROL_EX_.BRANCH_COND || CONTROL_EX_.JMP) {
+        bool is_taken = cpu.hu_.getPredicton(PC_EX_);
+        restore_ = is_taken && !PC_R_;
+        if (is_taken && PC_R_) {
+            PC_R_ = false;
+        }
+    }
+
+    if (CONTROL_EX_.BRANCH_COND) {
+        cpu.hu_.setBranchPrediction(PC_EX_, PC_DISP_, comp);
+    } else if (CONTROL_EX_.JMP) {
+        cpu.hu_.setBranchPrediction(PC_EX_, PC_DISP_, true);
+    }
 
     cpu.decode_.setPC_R(PC_R_);
     cpu.fetch_.setPC_R(PC_R_);
@@ -145,4 +160,8 @@ void Execute::setPC_EX(const PC &pc) {
 
 void Execute::setControl_EX(const ControlUnit::Flags &flags) {
     CONTROL_EX_ = flags;
+}
+
+bool Execute::isRestore() const noexcept {
+    return restore_;
 }

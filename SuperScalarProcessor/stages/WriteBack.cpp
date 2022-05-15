@@ -14,6 +14,7 @@ PipelineState WriteBack::Run(Simulator &cpu) {
     cpu.hu_.setBP_WB(wb_d_);
     cpu.decode_.writeToRF(wb_a_, wb_d_, wb_we_);
 
+    ++cycle;
     is_set = false;
     return PipelineState::OK;
 }

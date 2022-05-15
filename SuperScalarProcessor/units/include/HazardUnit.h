@@ -2,6 +2,7 @@
 #define SIMULATOR_HAZARDUNIT_H
 
 #include "Basics.h"
+#include "BranchPredictor.h"
 
 class HazardUnit final {
 public:
@@ -20,6 +21,8 @@ public:
     bool CheckForStall(bool ws_ex, std::bitset<5> rd, Simulator &cpu) noexcept;
     [[nodiscard]] bool FD_EN() const noexcept;
     [[nodiscard]] bool PC_EN() const noexcept;
+    [[nodiscard]] bool getPredicton(const PC &pc) const noexcept;
+    [[nodiscard]] PC getTarget(bool pred, const PC &pc) const noexcept;
 
     void setBP_MEM(std::bitset<32> wb_d);
     void setBP_WB(std::bitset<32> wb_d);
@@ -27,6 +30,7 @@ public:
     void setHU_MEM_RD_WB(std::bitset<5> wb_a, bool wb_we);
     void setA1_A2_EX(std::bitset<5> a1, std::bitset<5> a2);
     void setHU_PC_REDIECT(bool pc_r);
+    void setBranchPrediction(const PC &cur_pc, const PC &pc_disp, bool comp);
     void sendEndOfIMEM();
 
     PipelineState pl_state{PipelineState::OK};
@@ -38,6 +42,8 @@ private:
     //  isStall
     bool pc_en_{true};
     bool fd_en_{true};
+    // Prediction
+    // Target
     /*===============*/
 
     /*=== inputs ====*/
@@ -53,6 +59,13 @@ private:
     bool wb_we_wb_{false};
     std::bitset<5> hu_mem_rd_m_;
     std::bitset<5> hu_mem_rd_wb_;
+    // PC_EX
+    // PC_DISP
+    // COMP
+    /*===============*/
+
+    /*==== Units ====*/
+    BranchPredictor branchPredictor_;
     /*===============*/
 };
 

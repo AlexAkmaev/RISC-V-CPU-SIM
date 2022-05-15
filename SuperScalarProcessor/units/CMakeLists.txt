@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.17)
 
 set(UNITS_SOURCES
+    BranchPredictor.cpp
     ControlUnit.cpp
     HazardUnit.cpp
 )

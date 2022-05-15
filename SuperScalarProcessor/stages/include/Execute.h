@@ -13,6 +13,7 @@ public:
     [[nodiscard]] std::bitset<32> ALU_OUT() const noexcept;
     [[nodiscard]] std::bitset<32> D1() const noexcept;
     [[nodiscard]] std::bitset<32> RS2V() const noexcept;
+    [[nodiscard]] bool isRestore() const noexcept;
     [[nodiscard]] bool PC_R() const noexcept;
     [[nodiscard]] PC PC_EX() const noexcept;
     [[nodiscard]] PC PC_DISP() const noexcept;
@@ -52,6 +53,8 @@ private:
     std::bitset<32> alu_out_;
     PC PC_DISP_;
     bool PC_R_{false};
+    bool restore_{false};
+    bool BP_WRONG_{false};  //  Branch Prediction was wrong
     WE_GEN we_gen_;
     /*===============*/
 

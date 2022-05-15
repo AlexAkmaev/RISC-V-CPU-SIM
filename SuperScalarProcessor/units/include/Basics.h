@@ -45,6 +45,16 @@ std::bitset<N> concat(std::bitset<N_Args>... args) {
     return std::bitset<N>{bit_representation_ans};
 }
 
+// Assigns lhs to the part of rhs from L to R range
+template<std::size_t L, std::size_t R, std::size_t N>
+std::bitset<N> assign_sub(std::bitset<N> lhs, std::bitset<L - R + 1> rhs) {
+    static_assert(N > L - R + 1);
+    for (size_t i = R, j = 0; i <= L; ++i, ++j) {
+        lhs.set(i, rhs[j]);
+    }
+    return lhs;
+}
+
 template<std::size_t N>
 std::bitset<1> SignBit(std::bitset<N> imm) {
     auto ans = imm[N - 1] ? std::bitset<1>{1} : std::bitset<1>{0};
