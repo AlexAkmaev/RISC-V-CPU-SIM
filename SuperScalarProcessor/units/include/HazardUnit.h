@@ -2,6 +2,7 @@
 #define SIMULATOR_HAZARDUNIT_H
 
 #include "Basics.h"
+#include "BranchPredictor.h"
 
 class HazardUnit final {
 public:

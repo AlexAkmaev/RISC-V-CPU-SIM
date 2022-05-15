@@ -40,7 +40,8 @@ std::bitset<32> HazardUnit::BP_RD() const noexcept {
 }
 
 bool HazardUnit::CheckForStall(bool ws_ex, std::bitset<5> rd, Simulator &cpu) noexcept {
-    if (ws_ex && (bp_rd_rs1_ = rd == cpu.decode_.getInstr().getRs1() || (bp_rd_rs2_ = rd == cpu.decode_.getInstr().getRs2()))) {
+    if (ws_ex &&
+        (bp_rd_rs1_ = rd == cpu.decode_.getInstr().getRs1() || (bp_rd_rs2_ = rd == cpu.decode_.getInstr().getRs2()))) {
         pc_en_ = false;
         fd_en_ = false;
         pl_state = PipelineState::STALL;

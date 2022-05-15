@@ -2,9 +2,13 @@
 #define SIMULATOR_FETCH_H
 
 #include "Basics.h"
+#include "BranchPredictor.h"
 
 class Fetch final : public Stage {
 public:
+    struct InstrCache {
+
+    };
     explicit Fetch() : is_set(false), imem_(IMEM{0}) {}
     explicit Fetch(uint32_t instr_count) : is_set(false), imem_(IMEM{instr_count}) {}
     explicit Fetch(std::vector<std::bitset<32>> &&imem) : is_set(true), imem_(std::move(imem)) {}
