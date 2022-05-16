@@ -77,7 +77,6 @@ bool BranchPredictor::getPrediction(const PC &cur_pc) const noexcept {
     auto &bht_bucket2 = bht_.at(key.to_ulong()).second;
     auto tag1 = sub_range<30 - key_size - 1, 0>(bht_bucket1);
     auto tag2 = sub_range<30 - key_size - 1, 0>(bht_bucket2);
-//    assert(tag1 != tag2);
 
     std::bitset<bht_bucket_size> bht_bucket;
     if (/* bit valid */ bht_bucket1[bht_bucket_size - 1] && tag == tag1) {
@@ -113,7 +112,6 @@ PC BranchPredictor::getTarget(bool pred, const PC &cur_pc) const noexcept {
     auto &btb_bucket2 = btb_.at(key.to_ulong()).second;
     auto tag1 = sub_range<30 - key_size - 1, 0>(btb_bucket1);
     auto tag2 = sub_range<30 - key_size - 1, 0>(btb_bucket2);
-//    assert(tag1 != tag2);
 
     std::bitset<32> target;
     if (tag == tag1) {
