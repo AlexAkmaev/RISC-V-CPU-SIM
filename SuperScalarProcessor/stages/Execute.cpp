@@ -6,9 +6,14 @@ PipelineState Execute::Run(Simulator &cpu) {
         return PipelineState::STALL;
     }
 
+    wb_a_ = instr_.getRd();
+    // Can't write to x0 reg
+    if ((CONTROL_EX_.JMP || CONTROL_EX_.JALR) && wb_a_ == 0) {
+        CONTROL_EX_.WB_WE = false;
+    }
+
     we_gen_ = WE_GEN{CONTROL_EX_.MEM_WE, CONTROL_EX_.WB_WE, CONTROL_EX_.EBREAK, v_ex_};
 
-    wb_a_ = instr_.getRd();
     imm_ = IMM{instr_, CONTROL_EX_.JALR};
     PC_DISP_ = PC{imm_.getImm()};
 
@@ -27,7 +32,7 @@ PipelineState Execute::Run(Simulator &cpu) {
     cpu.hu_.setHU_PC_REDIECT(PC_R_);
 
     // if the instr can transfer control
-    if (CONTROL_EX_.BRANCH_COND || CONTROL_EX_.JMP) {
+    if (v_ex_ && (CONTROL_EX_.BRANCH_COND || CONTROL_EX_.JMP)) {
         bool is_taken = cpu.hu_.getPredicton(PC_EX_);
         restore_ = is_taken && !PC_R_;
         if (is_taken && PC_R_) {
@@ -35,9 +40,9 @@ PipelineState Execute::Run(Simulator &cpu) {
         }
     }
 
-    if (CONTROL_EX_.BRANCH_COND) {
+    if (CONTROL_EX_.BRANCH_COND && v_ex_) {
         cpu.hu_.setBranchPrediction(PC_EX_, PC_DISP_, comp);
-    } else if (CONTROL_EX_.JMP) {
+    } else if (CONTROL_EX_.JMP && v_ex_) {
         cpu.hu_.setBranchPrediction(PC_EX_, PC_DISP_, true);
     }
 
@@ -164,4 +169,8 @@ void Execute::setControl_EX(const ControlUnit::Flags &flags) {
 
 bool Execute::isRestore() const noexcept {
     return restore_;
+}
+
+RISCVInstr Execute::getInstr() const noexcept {
+    return instr_;
 }

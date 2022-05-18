@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.17)
 
 set(RISCV_SOURCES
     instruction.cpp
+    opcodes.cpp
     simulator.cpp
 )
 

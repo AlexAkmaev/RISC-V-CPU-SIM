@@ -25,6 +25,8 @@ public:
     std::bitset<32> loadFromDMEM(std::bitset<32> A, DMEM::Width w_type = DMEM::Width::WORD);
 
     bool is_set{false};
+    bool mem_we_{false};
+    std::bitset<32> D2;
 private:
     /*=== units ===*/
     DMEM dmem_;
@@ -34,7 +36,6 @@ private:
     WE_GEN we_gen_;
     bool ws_{false};
     DMEM::Width lwidth_;
-    std::bitset<32> D2;
     std::bitset<32> alu_out_;
     /*==============*/
 

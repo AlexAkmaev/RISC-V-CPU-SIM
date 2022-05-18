@@ -9,6 +9,7 @@ class Execute final : public Stage {
 public:
     PipelineState Run(Simulator &cpu) override;
 
+    [[nodiscard]] RISCVInstr getInstr() const noexcept;
     [[nodiscard]] WE_GEN getWE_GEN() const noexcept;
     [[nodiscard]] std::bitset<32> ALU_OUT() const noexcept;
     [[nodiscard]] std::bitset<32> D1() const noexcept;

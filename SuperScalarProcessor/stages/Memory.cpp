@@ -8,7 +8,8 @@ PipelineState Memory::Run(Simulator &cpu) {
 
     ebreak_ = we_gen_.EBREAK();
     wb_we_ = we_gen_.WB_WE();
-    if (we_gen_.MEM_WE()) {
+    mem_we_ = we_gen_.MEM_WE();
+    if (mem_we_) {
         dmem_.Store(D2, alu_out_, lwidth_);
     }
 

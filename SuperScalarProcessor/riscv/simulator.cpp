@@ -1,3 +1,4 @@
+#include <iomanip>
 #include "simulator.h"
 #include "macros.h"
 

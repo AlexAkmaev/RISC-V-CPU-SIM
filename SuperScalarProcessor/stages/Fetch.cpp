@@ -14,6 +14,14 @@ PipelineState Fetch::Run(Simulator &cpu) {
         instr_ = RISCVInstr{imem_.getInstr(pc_)};
     }
 
+//    if (instr_.ToString() == "bge x10, x11, 92") {
+//        counter++;
+//        std::cout << counter << std::endl;
+//    }
+//    if (counter > 30) {
+//        instr_ = RISCVInstr(std::bitset<32>{/* ebreak */ 0x100073});
+//        cpu.hu_.sendEndOfIMEM();
+//    }
     if (cpu.hu_.PC_EN()) {
         bool prediction = cpu.hu_.getPredicton(pc_);
         if (cpu.execute_.isRestore()) {

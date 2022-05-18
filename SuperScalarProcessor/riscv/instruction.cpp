@@ -1,8 +1,10 @@
 #include "instruction.h"
 #include "Basics.h"
 #include <cassert>
+#include <sstream>
+#include <iomanip>
 
-RISCVInstr::RISCVInstr(const std::bitset<32> i)  : instr_(i) {
+RISCVInstr::RISCVInstr(const std::bitset<32> i) : instr_(i) {
     std::bitset<7> opcode = sub_range<6, 0>(instr_);
     switch (opcode.to_ulong()) {
         case 0b0110111:
@@ -257,4 +259,48 @@ std::bitset<7> RISCVInstr::getFunct7() const noexcept {
 
 std::bitset<32> RISCVInstr::getInstr() const noexcept {
     return instr_;
+}
+
+std::string RISCVInstr::ToString() const noexcept {
+    std::stringstream res;
+    res << std::left << std::setw(3) << OpcodeToString(op_) << " ";
+    IMM imm{*this, op_ == Opcode::JALR};
+    switch (type_) {
+        case Format::R: {
+            res << "x" << getRd().to_ulong() << ", "
+                << "x" << getRs1().to_ulong() << ", "
+                << "x" << getRs2().to_ulong();
+            break;
+        }
+        case Format::I: {
+            res << "x" << getRd().to_ulong() << ", ";
+            bool is_load = op_ == Opcode::LB || op_ == Opcode::LBU ||
+                           op_ == Opcode::LH || op_ == Opcode::LHU || op_ == Opcode::LW;
+            is_load ? res  << static_cast<int>(imm.getImm().to_ulong()) << "(x"
+                          << getRs1().to_ulong() << ")" :
+                      res << "x" << getRs1().to_ulong() << ", "
+                          << static_cast<int>(imm.getImm().to_ulong());
+            break;
+        }
+        case Format::S: {
+            res << "x" << getRs2().to_ulong() << ", "
+                 << static_cast<int>(imm.getImm().to_ulong()) << "(x" << getRs1().to_ulong()
+                << ")";
+            break;
+        }
+        case Format::B: {
+            res << "x" << getRs1().to_ulong() << ", "
+                << "x" << getRs2().to_ulong() << ", "
+                << static_cast<int>(imm.getImm().to_ulong());
+            break;
+        }
+        case Format::U:
+        case Format::J: {
+            res << "x" << getRd().to_ulong() << ", "
+                << static_cast<int>(imm.getImm().to_ulong());
+            break;
+        }
+    }
+
+    return res.str();
 }

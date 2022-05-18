@@ -1,0 +1,86 @@
+#include "opcodes.h"
+
+std::string OpcodeToString(Opcode op) {
+    switch (op) {
+        case Opcode::LUI:
+            return "lui";
+        case Opcode::AUIPC:
+            return "auipc";
+        case Opcode::JAL:
+            return "jal";
+        case Opcode::JALR:
+            return "jalr";
+        case Opcode::BEQ:
+            return "beq";
+        case Opcode::BNE:
+            return "bne";
+        case Opcode::BLT:
+            return "blt";
+        case Opcode::BGE:
+            return "bge";
+        case Opcode::BLTU:
+            return "bltu";
+        case Opcode::BGEU:
+            return "bgeu";
+        case Opcode::LB:
+            return "lb";
+        case Opcode::LH:
+            return "lh";
+        case Opcode::LW:
+            return "lw";
+        case Opcode::LBU:
+            return "lbu";
+        case Opcode::LHU:
+            return "lhu";
+        case Opcode::SB:
+            return "sb";
+        case Opcode::SH:
+            return "sh";
+        case Opcode::SW:
+            return "sw";
+        case Opcode::ADDI:
+            return "addi";
+        case Opcode::SLTI:
+            return "slti";
+        case Opcode::SLTIU:
+            return "sltiu";
+        case Opcode::XORI:
+            return "xori";
+        case Opcode::ORI:
+            return "ori";
+        case Opcode::ANDI:
+            return "andi";
+        case Opcode::SLLI:
+            return "slli";
+        case Opcode::SRLI:
+            return "srli";
+        case Opcode::SRAI:
+            return "srai";
+        case Opcode::ADD:
+            return "add";
+        case Opcode::SUB:
+            return "sub";
+        case Opcode::SLL:
+            return "sll";
+        case Opcode::SLT:
+            return "slt";
+        case Opcode::SLTU:
+            return "sltu";
+        case Opcode::XOR:
+            return "xor";
+        case Opcode::SRL:
+            return "srl";
+        case Opcode::SRA:
+            return "sra";
+        case Opcode::OR:
+            return "or";
+        case Opcode::AND:
+            return "and";
+        case Opcode::ECALL:
+            return "ecall";
+        case Opcode::EBREAK:
+            return "ebreak";
+        default:
+            return "unknown";
+    }
+}

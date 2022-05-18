@@ -29,6 +29,7 @@ public:
     void applyPC() noexcept;
 
     bool is_set{false};
+    int counter = 0;
 private:
     /*=== units ===*/
     IMEM imem_;

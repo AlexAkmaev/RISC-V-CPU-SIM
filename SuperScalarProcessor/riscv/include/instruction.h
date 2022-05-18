@@ -21,6 +21,8 @@ public:
     [[nodiscard]] std::bitset<3> getFunct3() const noexcept;
     [[nodiscard]] std::bitset<7> getFunct7() const noexcept;
     [[nodiscard]] std::bitset<32> getInstr() const noexcept;
+
+    std::string ToString() const noexcept;
 private:
     void SelectBranch();
     void SelectL();
