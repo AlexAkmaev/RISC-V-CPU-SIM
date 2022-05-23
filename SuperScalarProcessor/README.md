@@ -1,7 +1,8 @@
 # SuperScalar RISC-V CPU simulator
-This is a scalar pipelined cpu simulator for RISC architecture (only RV32I).
+This is a super scalar pipelined cpu simulator for RISC architecture (only RV32I).
 ### Structure
 ```
+├── common/  --------- Helpers, macroses and logger
 ├── riscv/  ---------- Instruction representation, RV32I opcodes and simulator that combines all stages
 ├── stages/ ---------- Implementation of 5 pipeline stages: Fetch, Decode, Execute, Memory, WriteBack
 ├── tests/  ---------- Unit tests for each instruction separately and for blocks of code to check the correctness of branches and elimination conflicts
@@ -9,8 +10,9 @@ This is a scalar pipelined cpu simulator for RISC architecture (only RV32I).
 │   ├── BlocksTests.cpp
 │   ├── CMakeLists.txt
 │   ├── data/ -------- Tests with raw data that can be passed to cpu executable
-│   │   └── loop.dat
+│   │   └── loop*.dat
 │   └── HazardUnitTests.cpp
+│   └── SuperScalarTests.cpp
 └── units/   --------- Implementation of the basic units that make up the microarchitecture
 ```
 ### Building
@@ -31,5 +33,7 @@ To launch unit tests run the following command:
 $ cd build && ctest
 ```
 ### Scheme
-The scheme corresponding to this implementation:
+**TODO:** The scheme corresponding to this implementation:  
+(To see scalar scheme go to `../ScalarProcessor/README.md`)
+
 
