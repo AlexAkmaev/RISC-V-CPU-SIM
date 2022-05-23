@@ -17,9 +17,12 @@ class Simulator;
 enum class PipelineState {
     OK,
     STALL,
+    STALL_DOWN,
     BREAK,
     ERR
 };
+
+enum class Way { UP, DOWN };
 
 class Stage {
 public:
@@ -128,7 +131,7 @@ public:
     explicit IMEM(std::vector<std::bitset<32>> &&imem) : imem_(std::move(imem)) {}
 
     [[nodiscard]] bool isEndOfIMEM(const PC &pc) const noexcept {
-        return (pc.val() == imem_.size());
+        return (pc.val() >= imem_.size());
     }
 
     void pushBackInstr(std::bitset<32> instr) {
@@ -158,13 +161,15 @@ class ControlUnit;
 
 class RegisterFile final {
 public:
-    void Write(std::bitset<5> A3, std::bitset<32> D3) {
-        uint8_t idx = A3.to_ulong();
+    // A is A3 or A6, D is D3 or D6
+    void Write(std::bitset<5> A, std::bitset<32> D) {
+        uint8_t idx = A.to_ulong();
         assert(idx < 32);
-        regs_[idx] = D3;
+        regs_[idx] = D;
     }
 
-    [[nodiscard]] std::bitset<32> Read(std::bitset<5> A) const {  // A is A1 or A2 - idx of source register
+    // A is A1, A2, A4, A5 - idx of source register
+    [[nodiscard]] std::bitset<32> Read(std::bitset<5> A) const {
         uint8_t idx = A.to_ulong();
         assert(idx < 32);
         return regs_.at(idx);
@@ -332,6 +337,10 @@ public:
         return ebreak_;
     }
 
+    void Invalidate() noexcept {
+        mem_we_ = wb_we_ = ebreak_ = false;
+    }
+
 private:
     bool mem_we_{false};
     bool wb_we_{false};
@@ -375,23 +384,23 @@ public:
         size_t idx = A.to_ulong();
         switch (w_type) {
             case Width::BYTE: {
-                auto byte = sub_range<7, 0>(dmem_.at(idx));
+                auto byte = sub_range<7, 0>(dmem_[idx]);
                 return concat<32>(SignExt<24>(SignBit(byte)), byte);
             }
             case Width::BYTE_U: {
-                auto byte = sub_range<7, 0>(dmem_.at(idx));
+                auto byte = sub_range<7, 0>(dmem_[idx]);
                 return concat<32>(std::bitset<24>{0}, byte);
             }
             case Width::HALF: {
-                auto half_word = sub_range<15, 0>(dmem_.at(idx));
+                auto half_word = sub_range<15, 0>(dmem_[idx]);
                 return concat<32>(SignExt<16>(SignBit(half_word)), half_word);
             }
             case Width::HALF_U: {
-                auto half_word = sub_range<15, 0>(dmem_.at(idx));
+                auto half_word = sub_range<15, 0>(dmem_[idx]);
                 return concat<32>(std::bitset<16>{0}, half_word);
             }
             case Width::WORD:
-                return dmem_.at(idx);
+                return dmem_[idx];
         }
         return {};
     }
