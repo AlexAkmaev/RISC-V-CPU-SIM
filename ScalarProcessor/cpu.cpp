@@ -21,5 +21,7 @@ int main(int argc, char *argv[]) {
         return 2;
     }
 
+    std::cout << "Total cycles: " << cpu.write_back_.cycle << std::endl;
+
     return 0;
 }

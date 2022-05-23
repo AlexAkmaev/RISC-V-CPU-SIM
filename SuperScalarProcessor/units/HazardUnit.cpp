@@ -109,8 +109,9 @@ std::bitset<32> HazardUnit::BP_RD(Way way) const noexcept {
     return way == Way::UP ? bp_rd_up_ : bp_wb_down_;
 }
 
-void HazardUnit::CheckWaysDataDepends(std::bitset<5> rd_up, bool wb_we, std::bitset<5> A4, std::bitset<5> A5) noexcept {
-    if (wb_we && (rd_up == A4 || rd_up == A5) && pl_state != PipelineState::STALL) {
+void HazardUnit::CheckWaysDataDepends(std::bitset<5> rd_up, bool wb_we,
+                                      std::bitset<5> A4, std::bitset<5> A5, bool is_ebreak) noexcept {
+    if (wb_we && (rd_up == A4 || rd_up == A5) && pl_state != PipelineState::STALL && !is_ebreak) {
         pl_state = PipelineState::STALL_DOWN;
         return;
     }

@@ -6,6 +6,7 @@
 #include <string>
 #include <cassert>
 #include <bitset>
+#include <map>
 #include <variant>
 #include <numeric>
 #include <algorithm>
@@ -338,55 +339,55 @@ public:
         HALF_U,
         WORD
     };
-    // Data Memory consists of 2^30 word, but let's make 2^10 to simplify
-    DMEM() : dmem_(std::vector<std::bitset<32>>(1024)) {}
+    // Data Memory consists of 2^30 word
+    DMEM() = default;
 
     void Store(std::bitset<32> WD, std::bitset<32> A, Width w_type = Width::WORD) {
-        assert(A.to_ulong() % 4 == 0);
-        size_t idx = A.to_ulong() / 4;
+//        assert(A.to_ulong() % 4 == 0);
+        uint32_t idx = A.to_ulong();
         switch (w_type) {
             case Width::BYTE:
             case Width::BYTE_U:
-                dmem_.at(idx) = concat<32>(std::bitset<24>{}, sub_range<7, 0>(WD));
+                dmem_[idx] = concat<32>(std::bitset<24>{}, sub_range<7, 0>(WD));
                 break;
             case Width::HALF:
             case Width::HALF_U:
-                dmem_.at(idx) = concat<32>(std::bitset<16>{}, sub_range<15, 0>(WD));
+                dmem_[idx] = concat<32>(std::bitset<16>{}, sub_range<15, 0>(WD));
                 break;
             case Width::WORD:
-                dmem_.at(idx) = WD;
+                dmem_[idx] = WD;
                 break;
         }
     }
 
     std::bitset<32> Load(std::bitset<32> A, Width w_type = Width::WORD) {
-        assert(A.to_ulong() % 4 == 0);
-        size_t idx = A.to_ulong() / 4;
+//        assert(A.to_ulong() % 4 == 0);
+        size_t idx = A.to_ulong();
         switch (w_type) {
             case Width::BYTE: {
-                auto byte = sub_range<7, 0>(dmem_.at(idx));
+                auto byte = sub_range<7, 0>(dmem_[idx]);
                 return concat<32>(SignExt<24>(SignBit(byte)), byte);
             }
             case Width::BYTE_U: {
-                auto byte = sub_range<7, 0>(dmem_.at(idx));
+                auto byte = sub_range<7, 0>(dmem_[idx]);
                 return concat<32>(std::bitset<24>{0}, byte);
             }
             case Width::HALF: {
-                auto half_word = sub_range<15, 0>(dmem_.at(idx));
+                auto half_word = sub_range<15, 0>(dmem_[idx]);
                 return concat<32>(SignExt<16>(SignBit(half_word)), half_word);
             }
             case Width::HALF_U: {
-                auto half_word = sub_range<15, 0>(dmem_.at(idx));
+                auto half_word = sub_range<15, 0>(dmem_[idx]);
                 return concat<32>(std::bitset<16>{0}, half_word);
             }
             case Width::WORD:
-                return dmem_.at(idx);
+                return dmem_[idx];
         }
         return {};
     }
 
 private:
-    std::vector<std::bitset<32>> dmem_;
+    std::map<uint32_t, std::bitset<32>> dmem_;
 };
 
 #endif //SIMULATOR_STAGE_H

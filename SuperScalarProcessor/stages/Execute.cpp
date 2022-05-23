@@ -50,13 +50,15 @@ PipelineState Execute::Run(Simulator &cpu) {
 
     PC_R_ = ((compUp && CONTROL_EX_Up_.BRANCH_COND) || CONTROL_EX_Up_.JMP || CONTROL_EX_Up_.JALR) && v_ex_up_;
 
+    ProcessPrediction(cpu, Way::UP, compUp, compDown);
+
     if (PC_R_) {
         we_gen_down_.Invalidate();
         v_ex_down_ = false;
         cpu.fetch_.setPC_EX(PC_EX_Up_);
         cpu.fetch_.setPC_DISP(PC_DISP_Up_);
         cpu.fetch_.setJALR(CONTROL_EX_Up_.JALR, Way::UP);
-    } else {
+    } else if (!restoreUp_) {
         PC_R_ = ((compDown && CONTROL_EX_Down_.BRANCH_COND) || CONTROL_EX_Down_.JMP || CONTROL_EX_Down_.JALR) && v_ex_down_;
         cpu.fetch_.setPC_EX(PC_EX_Up_ + 4);
         cpu.fetch_.setPC_DISP(PC_DISP_Down_);
@@ -65,20 +67,7 @@ PipelineState Execute::Run(Simulator &cpu) {
 
     cpu.hu_.setHU_PC_REDIECT(PC_R_);
 
-//    // if the instr can transfer control
-//    if (v_ex_up_ && (CONTROL_EX_Up_.BRANCH_COND || CONTROL_EX_Up_.JMP)) {
-//        bool is_taken = cpu.hu_.getPredicton(PC_EX_Up_);
-//        restore_ = is_taken && !PC_R_;
-//        if (is_taken && PC_R_) {
-//            PC_R_ = false;
-//        }
-//    }
-//
-//    if (CONTROL_EX_Up_.BRANCH_COND && v_ex_up_) {
-//        cpu.hu_.setBranchPrediction(PC_EX_Up_, PC_DISP_Up_, comp);
-//    } else if (CONTROL_EX_Up_.JMP && v_ex_up_) {
-//        cpu.hu_.setBranchPrediction(PC_EX_Up_, PC_DISP_Up_, true);
-//    }
+    ProcessPrediction(cpu, Way::DOWN, compUp, compDown);
 
     cpu.decode_.setPC_R(PC_R_);
     cpu.fetch_.setPC_R(PC_R_);
@@ -89,6 +78,36 @@ PipelineState Execute::Run(Simulator &cpu) {
 
     is_set = false;
     return PipelineState::OK;
+}
+
+void Execute::ProcessPrediction(Simulator &cpu, Way way, bool compUp, bool compDown) noexcept {
+    bool is_control_instr = way == Way::UP ? v_ex_up_ && (CONTROL_EX_Up_.BRANCH_COND || CONTROL_EX_Up_.JMP) :
+                                             v_ex_down_ && (CONTROL_EX_Down_.BRANCH_COND || CONTROL_EX_Down_.JMP);
+
+    if (is_control_instr) {
+        bool is_taken;
+        if (way == Way::UP) {
+            is_taken = cpu.hu_.getPredicton(PC_EX_Up_);
+            restoreUp_ = is_taken && !PC_R_;
+        } else {
+            is_taken = cpu.hu_.getPredicton(PC_EX_Up_ + 4);
+            restoreDown_ = is_taken && !PC_R_;
+        }
+
+        if (is_taken && PC_R_) {
+            PC_R_ = false;
+        }
+    }
+
+    if (CONTROL_EX_Up_.BRANCH_COND && v_ex_up_ && way == Way::UP) {
+        cpu.hu_.setBranchPrediction(PC_EX_Up_, PC_DISP_Up_, compUp);
+    } else if (CONTROL_EX_Up_.JMP && v_ex_up_ && way == Way::UP) {
+        cpu.hu_.setBranchPrediction(PC_EX_Up_, PC_DISP_Up_, true);
+    } else if (CONTROL_EX_Down_.BRANCH_COND && v_ex_down_ && way == Way::DOWN) {
+        cpu.hu_.setBranchPrediction(PC_EX_Up_ + 4, PC_DISP_Down_, compDown);
+    } else if (CONTROL_EX_Down_.JMP && v_ex_down_ && way == Way::DOWN) {
+        cpu.hu_.setBranchPrediction(PC_EX_Up_ + 4, PC_DISP_Down_, true);
+    }
 }
 
 std::bitset<32> Execute::ChooseRS(const HazardUnit::HU_RS &hu_rs, Simulator &cpu) const {
@@ -259,8 +278,8 @@ void Execute::setControl_EX(const ControlUnit::Flags &flags, Way way) {
     }
 }
 
-bool Execute::isRestore() const noexcept {
-    return restore_;
+bool Execute::isRestore(Way way) const noexcept {
+    return way == Way::UP ? restoreUp_ : restoreDown_;
 }
 
 RISCVInstr Execute::getInstr(Way way) const noexcept {

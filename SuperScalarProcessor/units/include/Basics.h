@@ -362,7 +362,6 @@ public:
     DMEM() = default;
 
     void Store(std::bitset<32> WD, std::bitset<32> A, Width w_type = Width::WORD) {
-//        assert(A.to_ulong() % 4 == 0);
         uint32_t idx = A.to_ulong();
         switch (w_type) {
             case Width::BYTE:
@@ -380,7 +379,6 @@ public:
     }
 
     std::bitset<32> Load(std::bitset<32> A, Width w_type = Width::WORD) {
-//        assert(A.to_ulong() % 4 == 0);
         size_t idx = A.to_ulong();
         switch (w_type) {
             case Width::BYTE: {

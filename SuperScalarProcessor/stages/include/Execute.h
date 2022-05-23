@@ -16,7 +16,7 @@ public:
     [[nodiscard]] std::bitset<32> D4() const noexcept;
     [[nodiscard]] std::bitset<32> RS2V() const noexcept;
     [[nodiscard]] std::bitset<32> RS5V() const noexcept;
-    [[nodiscard]] bool isRestore() const noexcept;
+    [[nodiscard]] bool isRestore(Way way) const noexcept;
     [[nodiscard]] bool PC_R() const noexcept;
     [[nodiscard]] PC PC_EX_Up() const noexcept;
     [[nodiscard]] PC PC_DISP(Way way) const noexcept;
@@ -40,6 +40,8 @@ private:
     [[nodiscard]] std::bitset<32> ChooseALU_SRC2(std::bitset<32> RS2V);
     [[nodiscard]] std::bitset<32> ChooseALU_SRC4(std::bitset<32> RS4V);
     [[nodiscard]] std::bitset<32> ChooseALU_SRC5(std::bitset<32> RS5V);
+
+    void ProcessPrediction(Simulator &cpu, Way way, bool compUp, bool compDown) noexcept;
 
     /*=== units ===*/
     //  static ALU1 and ALU2
@@ -66,7 +68,8 @@ private:
     PC PC_DISP_Up_;
     PC PC_DISP_Down_;
     bool PC_R_{false};
-    bool restore_{false};
+    bool restoreUp_{false};
+    bool restoreDown_{false};
     WE_GEN we_gen_up_;
     WE_GEN we_gen_down_;
     /*===============*/

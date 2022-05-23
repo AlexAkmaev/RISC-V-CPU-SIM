@@ -21,14 +21,17 @@ PipelineState Fetch::Run(Simulator &cpu) {
 
     uint8_t pc_increment = cpu.hu_.pl_state == PipelineState::STALL_DOWN ? 4 : 8;
     if (cpu.hu_.PC_EN()) {
-//        bool prediction = cpu.hu_.getPredicton(pc_up_);
-//        if (cpu.execute_.isRestore()) {
-//            pc_up_next_ = pc_ex_ + 4;
-//        } else if (prediction) {
-//            pc_up_next_ = cpu.hu_.getTarget(prediction, pc_up_);
-//        } else 
-            if (!pc_r_) {
-                // !!!!
+        bool prediction_up = cpu.hu_.getPredicton(pc_up_);
+        bool prediction_down = cpu.hu_.getPredicton(pc_up_ + 4);
+        if (cpu.execute_.isRestore(Way::UP)) {
+            pc_up_next_ = pc_ex_;  //  + 4 is already in execute stage
+        } else if (cpu.execute_.isRestore(Way::DOWN)) {
+            pc_up_next_ = pc_ex_ + 4;
+        } else if (prediction_up) {
+            pc_up_next_ = cpu.hu_.getTarget(prediction_up, pc_up_);
+        } else if (prediction_down) {
+            pc_up_next_ = cpu.hu_.getTarget(prediction_down, pc_up_ + 4);
+        } else if (!pc_r_) {
             pc_up_next_ += pc_increment;
         } else {
             uint32_t reg_pc = jalrUp_ ? d1_.to_ulong() : d4_.to_ulong();

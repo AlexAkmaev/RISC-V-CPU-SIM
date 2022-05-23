@@ -27,45 +27,6 @@ PipelineState Simulator::Run() {
         ASSERT_STATE(execute_.Run(*this))
         ASSERT_STATE(decode_.Run(*this))
         ASSERT_STATE(fetch_.Run(*this))
-//        std::string mem_str_up;
-//        if (memory_.mem_we_up_) {
-//            mem_str_up = "D2: " + std::to_string(memory_.D2.to_ulong()) +
-//                         " Adr: " + std::to_string(static_cast<int>(memory_.ALU_OUT(Way::UP).to_ulong()));
-//        } else {
-//            mem_str_up = "WB_WE: " + std::to_string(memory_.WB_WE(Way::UP)) +
-//                         " Reg: " + std::to_string(memory_.WB_A(Way::UP).to_ulong()) +
-//                         " Dat: " + std::to_string(memory_.getOutData(Way::UP).to_ulong());
-//        }
-//        std::string wb_str_up = "WB_WE: " + std::to_string(write_back_.WB_WE(Way::UP)) +
-//                                " Reg: " + std::to_string(write_back_.WB_A(Way::UP).to_ulong()) +
-//                                " Dat: " + std::to_string(write_back_.WB_D(Way::UP).to_ulong());
-//
-//        std::string mem_str_down;
-//        if (memory_.mem_we_down_) {
-//            mem_str_down = "D2: " + std::to_string(memory_.D2.to_ulong()) +
-//                         " Adr: " + std::to_string(static_cast<int>(memory_.ALU_OUT(Way::DOWN).to_ulong()));
-//        } else {
-//            mem_str_down = "WB_WE: " + std::to_string(memory_.WB_WE(Way::DOWN)) +
-//                         " Reg: " + std::to_string(memory_.WB_A(Way::DOWN).to_ulong()) +
-//                         " Dat: " + std::to_string(memory_.getOutData(Way::DOWN).to_ulong());
-//        }
-//        std::string wb_str_down = "WB_WE: " + std::to_string(write_back_.WB_WE(Way::DOWN)) +
-//                                " Reg: " + std::to_string(write_back_.WB_A(Way::DOWN).to_ulong()) +
-//                                " Dat: " + std::to_string(write_back_.WB_D(Way::DOWN).to_ulong());
-//        std::cout << std::left
-//        << std::setw(24) << "|F" + std::to_string(fetch_.cycle) + ": " + fetch_.getInstr(Way::UP).ToString()
-//        << std::setw(24) << "|D" + std::to_string(decode_.cycle) + ": " + decode_.getInstr(Way::UP).ToString()
-//        << std::setw(24) << "|E" + std::to_string(execute_.cycle) + ": " + execute_.getInstr(Way::UP).ToString()
-//         << std::setw(24) << "|M" + std::to_string(execute_.cycle) + ": " + mem_str_up + "    "
-//         << std::setw(24) << "|W" + std::to_string(execute_.cycle) + ": " + wb_str_up << std::endl
-//        << std::setw(24) << "|F" + std::to_string(fetch_.cycle) + ": " + fetch_.getInstr(Way::DOWN).ToString()
-//        << std::setw(24) << "|D" + std::to_string(decode_.cycle) + ": " + decode_.getInstr(Way::DOWN).ToString()
-//        << std::setw(24) << "|E" + std::to_string(execute_.cycle) + ": " + execute_.getInstr(Way::DOWN).ToString()
-//         << std::setw(24) << "|M" + std::to_string(execute_.cycle) + ": " + mem_str_down + "    "
-//         << std::setw(24) << "|W" + std::to_string(execute_.cycle) + ": " + wb_str_down << std::endl
-//        << "========" << std::setw(10) << "a0 = " + std::to_string(decode_.getRegFile().Read(10).to_ulong())
-//        << std::setw(10) << "a1 = " + std::to_string(decode_.getRegFile().Read(11).to_ulong())
-//        << std::setw(10) << "a5 = " + std::to_string(decode_.getRegFile().Read(15).to_ulong()) << std::endl;
     }
 }
 

@@ -13,16 +13,16 @@ PipelineState Decode::Run(Simulator &cpu) {
 
     v_de_up_ = !(pc_f_ || pc_r_ || cpu.hu_.pl_state == PipelineState::STALL);
 
+    cu_down_.setState(instrDown_);
     cpu.hu_.CheckWaysDataDepends(instrUp_.getRd(), cu_up_.flags.WB_WE && v_de_up_,
-                                 instrDown_.getRs1(), instrDown_.getRs2());
+                                 instrDown_.getRs1(), instrDown_.getRs2(), cu_down_.flags.EBREAK);
     bool is_stall_down = cpu.hu_.pl_state == PipelineState::STALL_DOWN;
 
     // For down instruction
-    cu_down_.setState(instrDown_);
     D4 = reg_file_.Read(instrDown_.getRs1());
     D5 = reg_file_.Read(instrDown_.getRs2());
 
-    v_de_down_ = !(pc_f_ || pc_r_ || cpu.hu_.pl_state == PipelineState::STALL || is_stall_down);
+    v_de_down_ = !(pc_f_ || pc_r_ || cpu.hu_.pl_state == PipelineState::STALL || is_stall_down || cu_down_.flags.EBREAK);
 
     cpu.DEtransmitData();
 

@@ -18,7 +18,8 @@ public:
     };
 
     bool CheckForStall(Simulator &cpu) noexcept;
-    void CheckWaysDataDepends(std::bitset<5> rd_up, bool wb_we, std::bitset<5> A4, std::bitset<5> A5) noexcept;  // For decode stage
+    void CheckWaysDataDepends(std::bitset<5> rd_up, bool wb_we,
+                              std::bitset<5> A4, std::bitset<5> A5, bool is_ebreak) noexcept;  // For decode stage
 
     [[nodiscard]] HU_RS HU_RS1() noexcept;
     [[nodiscard]] HU_RS HU_RS2() noexcept;
