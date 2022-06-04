@@ -1,7 +1,7 @@
 #ifndef SIMULATOR_FETCH_H
 #define SIMULATOR_FETCH_H
 
-#include "Basics.h"
+#include "Basics.hpp"
 
 class Fetch final : public Stage {
 public:

@@ -1,8 +1,8 @@
 #ifndef SIMULATOR_DECODE_H
 #define SIMULATOR_DECODE_H
 
-#include "Basics.h"
-#include "ContolUnit.h"
+#include "Basics.hpp"
+#include "ContolUnit.hpp"
 
 class Decode final : public Stage {
 public:

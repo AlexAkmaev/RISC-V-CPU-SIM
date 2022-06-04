@@ -1,7 +1,7 @@
 #ifndef SIMULATOR_CONTOLUNIT_H
 #define SIMULATOR_CONTOLUNIT_H
 
-#include "Basics.h"
+#include "Basics.hpp"
 
 class ControlUnit final {
 public:

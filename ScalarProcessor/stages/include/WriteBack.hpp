@@ -1,7 +1,7 @@
 #ifndef SIMULATOR_WRITEBACK_H
 #define SIMULATOR_WRITEBACK_H
 
-#include "Basics.h"
+#include "Basics.hpp"
 
 class WriteBack final : public Stage {
 public:

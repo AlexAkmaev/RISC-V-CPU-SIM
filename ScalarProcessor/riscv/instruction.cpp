@@ -1,5 +1,5 @@
-#include "instruction.h"
-#include "Basics.h"
+#include "instruction.hpp"
+#include "Basics.hpp"
 #include <cassert>
 
 RISCVInstr::RISCVInstr(const std::bitset<32> i)  : instr_(i) {

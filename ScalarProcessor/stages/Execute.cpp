@@ -1,5 +1,5 @@
-#include "Execute.h"
-#include "simulator.h"
+#include "Execute.hpp"
+#include "simulator.hpp"
 
 PipelineState Execute::Run(Simulator &cpu) {
     if (!is_set) {

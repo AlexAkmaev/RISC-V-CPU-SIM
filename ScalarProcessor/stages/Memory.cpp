@@ -1,5 +1,5 @@
-#include "Memory.h"
-#include "simulator.h"
+#include "Memory.hpp"
+#include "simulator.hpp"
 
 PipelineState Memory::Run(Simulator &cpu) {
     if (!is_set) {

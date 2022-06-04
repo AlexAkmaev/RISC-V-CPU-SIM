@@ -1,5 +1,5 @@
 #include <fstream>
-#include "simulator.h"
+#include "simulator.hpp"
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {

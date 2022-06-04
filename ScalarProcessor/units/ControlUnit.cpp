@@ -1,4 +1,4 @@
-#include "ContolUnit.h"
+#include "ContolUnit.hpp"
 
 void ControlUnit::setState(const RISCVInstr &instr) {
     reset();

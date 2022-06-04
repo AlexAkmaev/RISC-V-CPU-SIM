@@ -4,17 +4,17 @@
 #include <iostream>
 #include <memory>
 
-#include "Fetch.h"
-#include "Decode.h"
-#include "Execute.h"
-#include "Memory.h"
-#include "WriteBack.h"
+#include "Fetch.hpp"
+#include "Decode.hpp"
+#include "Execute.hpp"
+#include "Memory.hpp"
+#include "WriteBack.hpp"
 
-#include "ContolUnit.h"
-#include "HazardUnit.h"
+#include "ContolUnit.hpp"
+#include "HazardUnit.hpp"
 
-#include "instruction.h"
-#include "opcodes.h"
+#include "instruction.hpp"
+#include "opcodes.hpp"
 
 struct Simulator final {
     explicit Simulator(uint32_t instr_count);

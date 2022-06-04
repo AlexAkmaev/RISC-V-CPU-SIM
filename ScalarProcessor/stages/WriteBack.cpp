@@ -1,5 +1,5 @@
-#include "WriteBack.h"
-#include "simulator.h"
+#include "WriteBack.hpp"
+#include "simulator.hpp"
 
 PipelineState WriteBack::Run(Simulator &cpu) {
     if (!is_set) {

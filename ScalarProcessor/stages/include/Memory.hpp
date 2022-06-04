@@ -1,7 +1,7 @@
 #ifndef SIMULATOR_MEMORY_H
 #define SIMULATOR_MEMORY_H
 
-#include "Basics.h"
+#include "Basics.hpp"
 
 class Memory final : public Stage {
 public:

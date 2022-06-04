@@ -1,7 +1,7 @@
 #ifndef SIMULATOR_HAZARDUNIT_H
 #define SIMULATOR_HAZARDUNIT_H
 
-#include "Basics.h"
+#include "Basics.hpp"
 
 class HazardUnit final {
 public:

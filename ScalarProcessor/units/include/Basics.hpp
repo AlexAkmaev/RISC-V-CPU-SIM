@@ -10,7 +10,7 @@
 #include <variant>
 #include <numeric>
 #include <algorithm>
-#include "instruction.h"
+#include "instruction.hpp"
 
 class Simulator;
 

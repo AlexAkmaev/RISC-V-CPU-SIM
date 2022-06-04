@@ -1,5 +1,5 @@
-#include "simulator.h"
-#include "macros.h"
+#include "simulator.hpp"
+#include "macros.hpp"
 
 Simulator::Simulator(uint32_t instr_count) {
     fetch_ = Fetch{instr_count};

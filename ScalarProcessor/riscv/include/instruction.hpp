@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <bitset>
-#include "opcodes.h"
+#include "opcodes.hpp"
 
 class RISCVInstr {
 public:

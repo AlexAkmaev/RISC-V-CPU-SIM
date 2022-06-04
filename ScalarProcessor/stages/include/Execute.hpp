@@ -1,9 +1,9 @@
 #ifndef SIMULATOR_EXECUTE_H
 #define SIMULATOR_EXECUTE_H
 
-#include "Basics.h"
-#include "HazardUnit.h"
-#include "ContolUnit.h"
+#include "Basics.hpp"
+#include "HazardUnit.hpp"
+#include "ContolUnit.hpp"
 
 class Execute final : public Stage {
 public:

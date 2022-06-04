@@ -1,6 +1,6 @@
-#include "Fetch.h"
-#include "simulator.h"
-#include "instruction.h"
+#include "Fetch.hpp"
+#include "simulator.hpp"
+#include "instruction.hpp"
 
 PipelineState Fetch::Run(Simulator &cpu) {
     if (!is_set) {

@@ -1,6 +1,8 @@
 #ifndef SIMULATOR_OPCODES_H
 #define SIMULATOR_OPCODES_H
 
+#include <cstdint>
+
 // See official doc for formats at 130 p. in
 // https://github.com/riscv/riscv-isa-manual/releases/download/Ratified-IMAFDQC/riscv-spec-20191213.pdf
 // or https://github.com/riscv/riscv-opcodes/blob/master/opcodes-rv32i

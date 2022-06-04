@@ -1,5 +1,5 @@
-#include "HazardUnit.h"
-#include "simulator.h"
+#include "HazardUnit.hpp"
+#include "simulator.hpp"
 
 HazardUnit::HU_RS HazardUnit::HU_RS1() noexcept {
     if (wb_we_m_ && a1_ex_ == hu_mem_rd_m_) {

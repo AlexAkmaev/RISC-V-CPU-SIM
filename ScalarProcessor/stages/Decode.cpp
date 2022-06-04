@@ -1,5 +1,5 @@
-#include "Decode.h"
-#include "simulator.h"
+#include "Decode.hpp"
+#include "simulator.hpp"
 
 PipelineState Decode::Run(Simulator &cpu) {
     if (!is_set) {
